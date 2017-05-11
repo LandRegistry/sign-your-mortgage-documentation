@@ -20,56 +20,64 @@
         <p class="view"><a href="https://github.com/LandRegistry/sign-your-mortgage-documentation">View the Project on GitHub <small>LandRegistry/sign-your-mortgage-documentation</small></a></p>
       </header>
       <section>
-<h2>Sign Your Mortgage</h2>
-<p>The Sign Your Mortgage service allows a conveyancer to create a digital mortgage using the interface provided with Deed-API. the service also provides endpoints for getting a created deed, checking which deeds have been signed by borrowers and making a deed effective.</p>
-<p>Deeds created using the Deed-Api service can be signed by a borrower using the Sign Your Mortgage service on GOV.UK and submitted to HM Land Registry for registration using Business Gateway.</p>
-<h2>Example Payloads</h2>
-<p>Below are examples of payloads accepted by Deed API</p>
-<h3>Create Deed</h3>
-<h4>/deed/</h4>
-This endpoint requires that the Content-Type header be set as application/json
-<pre>
-  <code>
-    {
-        "title_number": "GR515835",
-        "md_ref": "e-MD1281M",
-        "property_address": "80 High Street, Plymouth, Devon, PL6 5WS",
-        "identity_checked": "Y",
-        "borrowers": [
-            {
-                "forename": "Ann",
-                "surname": "Smith",
-                "gender": "Female",
-                "address": "test address with postcode, PL14 3JR",
-                "dob": "23/01/1985",
-                "phone_number": "07502154998"
-            },
-            {
-                "forename": "Fredd",
-                "surname": "Smith",
-                "gender": "Female",
-                "address": "test address with postcode, PL14 3JR",
-                "dob": "23/01/1985",
-                "phone_number": "0750215999"
-            }
-        ],
-    }
-  </code>
-</pre>
-<h2>Test Hub</h2>
-<p>HM Land Registry operates a test hub which runs a test version of the Deed Api service allowing developers to test thier solution against a running example of the service.</p>
-<p>Access to the Test Hub is controlled via webseal and you will need to request to have your organisations certificate added to the access list</p>
-<p>the URL's for the Test-Hub are as follows:</p>
-<h3>Borrower Frontend</h3>
-<p>https://search-property-information.service.gov.uk/sign-my-mortgage/</p>
-<h3>Deed API</h3>
-<p>http://beta.landregistry.gov.uk/api/deeds</p>
-<div class="schemas">
-  <h3>JSON Schemas</h3>
-  <h4>
-    <a href="schemas/deed-api.json">Deed API</a>
-  </h4>
-</div>
+        <h2>Sign Your Mortgage</h2>
+        <p>The Sign Your Mortgage service allows a conveyancer to create a digital mortgage using the interface provided with Deed-API. the service also provides endpoints for getting a created deed, checking which deeds have been signed by borrowers and making a deed effective.</p>
+        <p>Deeds created using the Deed-Api service can be signed by a borrower using the Sign Your Mortgage service on GOV.UK and submitted to HM Land Registry for registration using Business Gateway.</p>
+        <div class="schemas">
+          <h2>JSON Schemas</h2>
+          <h4>
+            <a href="schemas/deed-api.json">Deed API</a>
+          </h4>
+        </div>
+        <div class="schemas">
+          <h2>Test Hub</h2>
+          <p>HM Land Registry operates a test hub which runs a test version of the Deed Api service allowing developers to test thier solution against a running example of the service.</p>
+          <p>Access to the Test Hub is controlled via webseal and you will need to request to have your organisations certificate added to the access list</p>
+          <p>the URL's for the Test-Hub are as follows:</p>
+          <h3>Borrower Frontend</h3>
+          <p>https://search-property-information.service.gov.uk/sign-my-mortgage/</p>
+          <h3>Deed API</h3>
+          <p>http://beta.landregistry.gov.uk/api/deeds</p>
+        </div>
+        <div class="schemas">
+          <h2>Example Payloads</h2>
+          <p>Below are examples of payloads accepted by Deed API</p>
+          <h3>Create Deed</h3>
+          <h4>/deed/</h4>
+          This endpoint requires that the Content-Type header be set as application/json
+          <pre>
+            <code>
+              {
+                  "title_number": "GR515835",
+                  "md_ref": "e-MD1281M",
+                  "property_address": "80 High Street, Plymouth, Devon, PL6 5WS",
+                  "identity_checked": "Y",
+                  "borrowers": [
+                      {
+                          "forename": "Ann",
+                          "surname": "Smith",
+                          "gender": "Female",
+                          "address": "test address with postcode, PL14 3JR",
+                          "dob": "23/01/1985",
+                          "phone_number": "07502154998"
+                      },
+                      {
+                          "forename": "Fredd",
+                          "surname": "Smith",
+                          "gender": "Female",
+                          "address": "test address with postcode, PL14 3JR",
+                          "dob": "23/01/1985",
+                          "phone_number": "0750215999"
+                      }
+                  ],
+              }
+            </code>
+          </pre>
+        </div>
+        <div class="schemas">
+          <h3>Test Data</h3>
+          <p>There</p>
+        </div>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/LandRegistry">LandRegistry</a></p>
@@ -77,6 +85,5 @@ This endpoint requires that the Content-Type header be set as application/json
       </footer>
     </div>
     <script src="javascripts/scale.fix.js"></script>
-
   </body>
 </html>
