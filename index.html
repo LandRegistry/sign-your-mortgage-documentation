@@ -21,11 +21,13 @@
       </header>
       <section>
 <h2>Sign Your Mortgage</h2>
-  <p>The Sign Your Mortgage service allows a conveyancer to create a digital mortgage using the interface provided with Deed-API. the service also provides endpoints for getting a created deed, checking which deeds have been signed by borrowers and making a deed effective.</p>
-  <p>Deeds created using the Deed-Api service can be signed by a borrower using the Sign Your Mortgage service on GOV.UK and submitted to HM Land Registry for registration using Business Gateway.</p>
+<p>The Sign Your Mortgage service allows a conveyancer to create a digital mortgage using the interface provided with Deed-API. the service also provides endpoints for getting a created deed, checking which deeds have been signed by borrowers and making a deed effective.</p>
+<p>Deeds created using the Deed-Api service can be signed by a borrower using the Sign Your Mortgage service on GOV.UK and submitted to HM Land Registry for registration using Business Gateway.</p>
 <h2>Example Payloads</h2>
 <p>Below are examples of payloads accepted by Deed API</p>
 <h3>Create Deed</h3>
+<h4>/deed/</h4>
+This endpoint requires that the Content-Type header be set as application/json
 <pre>
   <code>
     {
