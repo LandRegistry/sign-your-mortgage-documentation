@@ -14,23 +14,29 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>sign-your-mortgage-documentation</h1>
+        <h1>Sign Your Mortgage Documentation</h1>
         <p>Sign Your Mortgage API Documentation</p>
 
         <p class="view"><a href="https://github.com/LandRegistry/sign-your-mortgage-documentation">View the Project on GitHub <small>LandRegistry/sign-your-mortgage-documentation</small></a></p>
+        <p><a href="#aboutThisService">About This Service</a></p>
+        <p><a href="#jsonSchemas">JSON Schemas</a></p>
+        <p><a href="#testHub">Test Hub</a></p>
+        <p><a href="#examplePayloads">Example Payloads</a></p>
+        <p><a href="#testData">Test Data</a></p>
+
       </header>
       <section>
-        <h2>Sign Your Mortgage</h2>
+        <a name="aboutThisService"><h2>About This Service</h2></a>
         <p>The Sign Your Mortgage service allows a conveyancer to create a digital mortgage using the interface provided with Deed-API. the service also provides endpoints for getting a created deed, checking which deeds have been signed by borrowers and making a deed effective.</p>
         <p>Deeds created using the Deed-Api service can be signed by a borrower using the Sign Your Mortgage service on GOV.UK and submitted to HM Land Registry for registration using Business Gateway.</p>
         <div class="schemas">
-          <h2>JSON Schemas</h2>
+          <a name="jsonSchemas"><h2>JSON Schemas</h2></a>
           <h4>
             <a href="schemas/deed-api.json">Deed API</a>
           </h4>
         </div>
         <div class="schemas">
-          <h2>Test Hub</h2>
+          <a name="testHub"><h2>Test Hub</h2></a>
           <p>HM Land Registry operates a test hub which runs a test version of the Deed Api service allowing developers to test thier solution against a running example of the service.</p>
           <p>Access to the Test Hub is controlled via webseal and you will need to request to have your organisations certificate added to the access list</p>
           <p>the URL's for the Test-Hub are as follows:</p>
@@ -40,7 +46,7 @@
           <a href="http://beta.landregistry.gov.uk/api/deeds">http://beta.landregistry.gov.uk/api/deeds</a>
         </div>
         <div class="schemas">
-          <h2>Example Payloads</h2>
+          <a name="examplePayloads"><h2>Example Payloads</h2></a>
           <p>Below are examples of payloads accepted by Deed API</p>
           <h3>Create Deed</h3>
           <h4>/deed/</h4>
@@ -75,8 +81,8 @@
           </pre>
         </div>
         <div class="schemas">
-          <h3>Test Data</h3>
-          <p>There</p>
+          <a name="testData"><h3>Test Data</h3></a>
+          <p>There are a selection of test Titles and MD references in the Test Hub which can be used to test the service. the test data is as follows:</p>
         </div>
       </section>
       <footer>
