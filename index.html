@@ -21,7 +21,7 @@
         <p><a href="#aboutThisService">About This Service</a></p>
         <p><a href="#jsonSchemas">JSON Schemas</a></p>
         <p><a href="#testHub">Test Hub</a></p>
-        <p><a href="#examplePayloads">Example Payloads</a></p>
+        <p><a href="#examplePayloads">Example Payloads and Responses</a></p>
         <p><a href="#testData">Test Data</a></p>
 
       </header>
@@ -46,10 +46,11 @@
           <a href="http://beta.landregistry.gov.uk/api/deeds">http://beta.landregistry.gov.uk/api/deeds</a>
         </div>
         <div class="schemas">
-          <a name="examplePayloads"><h2>Example Payloads</h2></a>
+          <a name="examplePayloads"><h2>Example Payloads and Responses</h2></a>
           <p>Below are examples of payloads accepted by Deed API</p>
           <h3>Create Deed</h3>
           <h4>/deed/</h4>
+          <h5>Payload</h5>
           This endpoint requires that the Content-Type header be set as application/json
           <pre>
             <code>
@@ -75,7 +76,70 @@
             "dob": "23/01/1985",
             "phone_number": "0750215999"
         }
+    ]
+}
+            </code>
+          </pre>
+          <h5>Response</h5>
+          201 CREATED
+          <pre>
+            <code>
+{
+  "path": "/deed/0729e738-c073-445f-8976-9c81bbecf5c7"
+}
+            </code>
+          </pre>
+          <h3>Get Deed</h3>
+          <h4>/deed/&ltDeed Id&gt</h4>
+          <h5>Response</h5>
+          <pre>
+            <code>
+{
+  "deed": {
+    "additional_provisions": [
+      {
+        "additional_provision_code": "addp001",
+        "description": "This Mortgage Deed incorporates the Lenders Mortgage Conditions and Explanation 2006, a copy of which the borrower has received."
+      },
+      {
+        "additional_provision_code": "addp002",
+        "description": "The lender is obliged to make further advances and applies for the obligation to be entered in the register."
+      },
+      {
+        "additional_provision_code": "addp003",
+        "description": "The borrower applies to enter a restriction in the register that no disposition of the registered estate by the proprietor of the registered estate is to be registered without a written consent signed by the proprietor for the time being of the charge dated [the date of this charge] in favour of Bank of Test Plc referred to in the charges register."
+      }
     ],
+    "borrowers": [
+      {
+        "forename": "Ann",
+        "id": 676,
+        "surname": "Smith",
+        "token": "GT5VBTR8"
+      },
+      {
+        "forename": "Fredd",
+        "id": 677,
+        "surname": "Smith",
+        "token": "N1L51A4L"
+      }
+    ],
+    "charge_clause": {
+      "cre_code": "CRE001",
+      "description": "The borrower, with full title guarantee, charges to the lender the property by way of legal mortgage with payment of all money secured by this charge."
+    },
+    "effective_clause": "This charge takes effect when the registrar receives notification from Land Registry Devices that the charge is to take effect.",
+    "lender": {
+      "address": "12 Test Place, Test Street, London NW0 0TQ",
+      "name": "Test Building Society",
+      "registration": "Company registration number: 2347676"
+    },
+    "md_ref": "e-MD12344",
+    "property_address": "80 High Street, Plymouth, Devon, PL6 5WS",
+    "status": "DRAFT",
+    "title_number": "GR515835",
+    "token": "0b29c37b-1896-4219-832d-5ddf499a6027"
+  }
 }
             </code>
           </pre>
