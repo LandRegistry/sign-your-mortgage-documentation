@@ -55,7 +55,7 @@
             <code>
 {
     "title_number": "GR515835",
-    "md_ref": "e-MD1281M",
+    "md_ref": "e-MD12344",
     "property_address": "80 High Street, Plymouth, Devon, PL6 5WS",
     "identity_checked": "Y",
     "borrowers": [
@@ -81,8 +81,19 @@
           </pre>
         </div>
         <div class="schemas">
-          <a name="testData"><h3>Test Data</h3></a>
-          <p>There are a selection of test Titles and MD references in the Test Hub which can be used to test the service. the test data is as follows:</p>
+          <a name="testData"><h2>Test Data</h2></a>
+          <p>There are a selection of test Titles and MD references in the Test Hub which can be used to test the service. note that when creating a deed the borrowers must be an exact match to the proprietors on the register. See example payload above for a create deed payload using the data below that will work in the test hub. The test data is as follows:</p>
+          <h3>Good Title</h3>
+          <p><b>Title number</b> GR515835</p>
+          <p><b>Proprietors</b> Ann Smith, Fredd Smith</p>
+          <h3>Closed Title</h3>
+          <p><b>Title Number</b> GR518327</p>
+          <p><b>Response message</b> Title closed and continued under GR518006.</p>
+          <h3>Unsuitable Title</h3>
+          <p><b>Title Number</b> GR516921<p>
+          <p><b>Response</b> Title is not suitable for a digital mortgage as it is a qualified title.</p>
+          <h3>MD Reference</h3>
+          <p>e-MD12344</p>
         </div>
       </section>
       <footer>
