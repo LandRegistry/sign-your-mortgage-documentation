@@ -47,9 +47,10 @@
         </div>
         <div class="schemas">
           <a name="examplePayloads"><h2>Example Payloads and Responses</h2></a>
-          <p>Below are examples of payloads accepted by Deed API</p>
+          <p>Below are examples of payloads accepted by Deed API and responses</p>
+          <p><b>NOTE</b> This is not an exhaustive example of all error messages the system returns but provides an example of the format of each response and error type</p>
           <h3>Create Deed</h3>
-          <h4>/deed/</h4>
+          <h4>POST /deed/</h4>
           <h5>Payload</h5>
           This endpoint requires that the Content-Type header be set as application/json
           <pre>
@@ -80,7 +81,7 @@
 }
             </code>
           </pre>
-          <h5>Response</h5>
+          <h5>Responses</h5>
           201 CREATED
           <pre>
             <code>
@@ -89,9 +90,19 @@
 }
             </code>
           </pre>
+          400 BAD REQUEST
+          <pre>
+            <code>
+{
+  "errors": [
+    "Problem 1: A mobile phone number must be unique to an individual."
+  ]
+}
+            </code>
+          </pre>
           <h3>Get Deed</h3>
-          <h4>/deed/&ltDeed Id&gt</h4>
-          <h5>Response</h5>
+          <h4>GET /deed/&ltDeed Id&gt</h4>
+          <h5>Responses</h5>
           200 OK
           <pre>
             <code>
@@ -141,6 +152,66 @@
     "title_number": "GR515835",
     "token": "0b29c37b-1896-4219-832d-5ddf499a6027"
   }
+}
+            </code>
+          </pre>
+          404 NOT FOUND
+          <pre>
+            <code>
+{
+  "message": "Deed not found"
+}
+            </code>
+          </pre>
+          <h3>Retrieve signed deeds</h3>
+          <h4>GET /retrieve-signed</h4>
+          <h5>Responses</h5>
+          200 OK
+          <pre>
+            <code>
+{
+  "deeds": [
+    "40a235b9-78eb-4dab-95d6-db7c75eedcb0",
+    "2130a81c-3fbe-4381-ac47-a4300c48f841"
+  ]
+}
+            </code>
+          </pre>
+          404 NOT FOUND
+          <pre>
+            <code>
+{
+  "message": "There are no deeds which have been fully signed"
+}
+            </code>
+          </pre>
+          <h3>Make deed effective</h3>
+          <h4>POST /deed/&ltDeed Id&gt/make-effective</h4>
+          <h5>Responses</h5>
+          200 OK
+          <pre>
+            <code>
+{
+  "path": "/deed/40a235b9-78eb-4dab-95d6-db7c75eedcb0"
+}
+            </code>
+          </pre>
+          400 BAD REQUEST
+          <pre>
+            <code>
+{
+  "errors": [
+    "Problem 1: This deed cannot be made effective as not all borrowers have signed the deed."
+  ]
+}
+            </code>
+          </pre>
+          <h3>Generic error</h3>
+          <p>for any system error not handled by the system the following error will be returned.</p>
+          <pre>
+            <code>
+{
+  "message": "Unexpected error."
 }
             </code>
           </pre>
