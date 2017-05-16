@@ -14,10 +14,13 @@
   <body>
     <div class="wrapper">
       <header>
+
         <h1>Sign Your Mortgage Documentation</h1>
         <p>Sign Your Mortgage API Documentation</p>
 
-        <p class="view"><a href="https://github.com/LandRegistry/deed-api">View the Project on GitHub <small>LandRegistry/deed-api</small></a></p>
+        <p class="view"><a href="https://github.com/LandRegistry/deed-api">
+          View the Project on GitHub <small>LandRegistry/deed-api</small></a>
+        </p>
         <p><a href="#aboutThisService">About This Service</a></p>
         <p><a href="#jsonSchemas">JSON Schemas</a></p>
         <p><a href="#testHub">Test Hub</a></p>
@@ -27,8 +30,17 @@
       </header>
       <section>
         <a name="aboutThisService"><h2>About This Service</h2></a>
-        <p>The Sign Your Mortgage service allows a conveyancer to create a digital mortgage using the interface provided by Deed-API. The service also provides endpoints for getting a created deed, checking which deeds have been signed by borrowers and making a deed effective.</p>
-        <p>Deeds created using the Deed-Api service can be signed by a borrower using the Sign Your Mortgage service on GOV.UK and submitted to HM Land Registry for registration using Business Gateway.</p>
+        <p>
+          The Sign Your Mortgage service allows a conveyancer to create a
+          digital mortgage using the interface provided by Deed-API. The
+          service also provides endpoints for getting a created deed, checking
+          which deeds have been signed by borrowers and making a deed effective.
+        </p>
+        <p>
+          Deeds created using the Deed-Api service can be signed by a borrower
+          using the Sign Your Mortgage service on GOV.UK and submitted to
+          HM Land Registry for registration using Business Gateway.
+        </p>
         <div class="schemas">
           <a name="jsonSchemas"><h2>JSON Schemas</h2></a>
           <h4>
@@ -37,22 +49,40 @@
         </div>
         <div class="schemas">
           <a name="testHub"><h2>Test Hub</h2></a>
-          <p>HM Land Registry operates a test hub which runs a test version of the Deed Api service allowing developers to test their solution against a running example of the service.</p>
-          <p>Access to the Test Hub is controlled via webseal and you will need to request to have your organisation's certificate added to the access list.</p>
+          <p>
+            HM Land Registry operates a test hub which runs a test version of
+            the Deed Api service allowing developers to test their solution
+            against a running example of the service.
+          </p>
+          <p>Access to the Test Hub is controlled via webseal and you will need
+            to request to have your organisation's certificate added to the
+            access list.
+          </p>
           <p>The URL's for the Test-Hub are as follows:</p>
           <h3>Borrower Frontend</h3>
-          <a href="https://search-property-information.service.gov.uk/sign-my-mortgage/">https://search-property-information.service.gov.uk/sign-my-mortgage/</a>
+          <a href="https://search-property-information.service.gov.uk/sign-my-mortgage/">
+            https://search-property-information.service.gov.uk/sign-my-mortgage/
+          </a>
           <h3>Deed API</h3>
-          <a href="http://beta.landregistry.gov.uk/api/deeds">http://beta.landregistry.gov.uk/api/deeds</a>
+          <a href="http://beta.landregistry.gov.uk/api/deeds">
+            http://beta.landregistry.gov.uk/api/deeds
+          </a>
         </div>
         <div class="schemas">
           <a name="examplePayloads"><h2>Example Payloads and Responses</h2></a>
           <p>Below are examples of payloads accepted by Deed API and responses.</p>
-          <p><b>NOTE</b> This is not an exhaustive example of all error messages the system returns but provides an example of the format of each response and error type.</p>
+          <p>
+            <strong>NOTE</strong> This is not an exhaustive example of all
+            error messages the system returns but provides an example of the
+            format of each response and error type.
+          </p>
           <h3>Create Deed</h3>
           <h4>POST /deed/</h4>
           <h5>Payload</h5>
-          This endpoint requires that the Content-Type header be set as application/json
+          <p>
+            This endpoint requires that the Content-Type header
+            be set as application/json
+          </p>
           <pre>
             <code>
 {
@@ -101,7 +131,7 @@
             </code>
           </pre>
           <h3>Get Deed</h3>
-          <h4>GET /deed/&ltDeed Id&gt</h4>
+          <h4>GET /deed/&lt;Deed Id&gt;</h4>
           <h5>Responses</h5>
           200 OK
           <pre>
@@ -186,7 +216,7 @@
             </code>
           </pre>
           <h3>Make deed effective</h3>
-          <h4>POST /deed/&ltDeed Id&gt/make-effective</h4>
+          <h4>POST /deed/&lt;Deed Id&gt;/make-effective</h4>
           <h5>Responses</h5>
           200 OK
           <pre>
@@ -207,7 +237,10 @@
             </code>
           </pre>
           <h3>Generic error</h3>
-          <p>for any system error not handled by the system the following error will be returned.</p>
+          <p>
+            for any system error not handled by the system the following error
+            will be returned.
+          </p>
           <pre>
             <code>
 {
@@ -218,23 +251,41 @@
         </div>
         <div class="schemas">
           <a name="testData"><h2>Test Data</h2></a>
-          <p>There are a selection of test Titles and MD references in the Test Hub which can be used to test the service. Note that when creating a deed the borrowers must be an exact match to the proprietors on the register. See example payload above for a create deed payload using the data below that will work in the test hub. The test data is as follows:</p>
+          <p>
+            There are a selection of test Titles and MD references in the Test
+            Hub which can be used to test the service. Note that when creating
+            a deed the borrowers must be an exact match to the proprietors on
+            the register. See example payload above for a create deed payload
+            using the data below that will work in the test hub. The test data
+            is as follows:
+          </p>
           <h3>Good Title</h3>
-          <p><b>Title number</b> GR515835</p>
-          <p><b>Proprietors</b> Ann Smith, Fredd Smith</p>
+          <p><strong>Title number</strong> GR515835</p>
+          <p><strong>Proprietors</strong> Ann Smith, Fredd Smith</p>
           <h3>Closed Title</h3>
-          <p><b>Title Number</b> GR518327</p>
-          <p><b>Response message</b> Title closed and continued under GR518006.</p>
+          <p><strong>Title Number</strong> GR518327</p>
+          <p>
+            <strong>Response message</strong> Title closed and continued under
+            GR518006.
+          </p>
           <h3>Unsuitable Title</h3>
-          <p><b>Title Number</b> GR516921<p>
-          <p><b>Response</b> Title is not suitable for a digital mortgage as it is a qualified title.</p>
+          <p><strong>Title Number</strong> GR516921<p>
+          <p>
+            <strong>Response</strong> Title is not suitable for a digital
+            mortgage as it is a qualified title.
+          </p>
           <h3>MD Reference</h3>
           <p>e-MD12344</p>
         </div>
       </section>
       <footer>
-        <p>This project is maintained by <a href="https://github.com/LandRegistry">LandRegistry</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+        <p>This project is maintained by
+          <a href="https://github.com/LandRegistry">LandRegistry</a>
+        </p>
+        <p>
+          <small>Hosted on GitHub Pages &mdash; Theme by
+          <a href="https://github.com/orderedlist">orderedlist</a></small>
+        </p>
       </footer>
     </div>
     <script src="javascripts/scale.fix.js"></script>
