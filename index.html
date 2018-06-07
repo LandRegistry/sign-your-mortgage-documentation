@@ -26,6 +26,7 @@
         <p><a href="#testHub">Test Hub</a></p>
         <p><a href="#examplePayloads">Example Payloads and Responses</a></p>
         <p><a href="#testData">Test Data</a></p>
+        <p><a href="#businessGateway">Business Gateway</a></p>
 
       </header>
       <section>
@@ -71,8 +72,8 @@
             http://testhub.sign-your-mortgage-deed.landregistry.gov.uk/
           </a>
           <h3>Deed API</h3>
-          <a href="http://beta.landregistry.gov.uk/api/deeds">
-            http://beta.landregistry.gov.uk/api/deeds
+          <a href="http://bgtest.landregistry.gov.uk/api/deeds">
+            http://bgtest.landregistry.gov.uk/api/deeds
           </a>
         </div>
         <div class="schemas">
@@ -283,6 +284,29 @@
           </p>
           <h3>MD Reference</h3>
           <p>e-MD12344</p>
+        </div>
+        <div class="schemas">
+          <a name="businessGateway"><h2>Business Gateway</h2></a>
+          <p>
+            Once a digital mortgage has been signed and made effective applying
+            to have it registered is done using the existing EDRS channel through
+            Land Registrys Business Gateway Portal
+
+            for more information on how to develop for Business Gateway please find the
+            developer documentation here
+          </p>
+          <a href="https://www.gov.uk/guidance/business-gateway-developer-pack">Business Gateway Developer Pack</a>
+
+          <p>to submit a digital mortgage follow the steps outlined in the Business Gateway documentation
+             to lodge an Application and add a certified document to follow to the application as shown below</p>
+
+             <code>
+<Document>
+  <CertifiedCopy>Certified</CertifiedCopy>
+</Document>
+             </code>
+          <p>however once this application has been lodged do not submit a reaquest to lodge the charge document
+             Business Gateway will detect this is a Digital Mortgage and do this for you automatically</p>
         </div>
       </section>
       <footer>
