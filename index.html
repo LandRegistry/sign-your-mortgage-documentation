@@ -223,6 +223,30 @@
 }
             </code>
           </pre>
+
+          <h3>Retreive signed deeds</h3>
+          <h4>GET /deed/retrieve-signed</h4>
+          <h5>Responses</h5>
+          200 OK
+          <pre>
+            <code>
+{
+  "deeds": [
+    &lt;deed_id&gt;,
+    &lt;deed_id&gt;,
+    &lt;deed_id&gt;
+  ]
+}
+            </code>
+          </pre>
+          404 NOT FOUND
+          <pre>
+            <code>
+{
+  "message": "There are no deeds which have been fully signed"
+}
+            </code>
+          </pre>
           <h3>Make deed effective</h3>
           <h4>POST /deed/&lt;Deed Id&gt;/make-effective</h4>
           <h5>Responses</h5>
