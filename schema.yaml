@@ -45,7 +45,6 @@ paths:
       description: >
         The Deed endpoint returns details of a specific deed based on the unique
         deed reference.
-
         The response includes the Title Number, Property information,
         Borrower(s) information and deed information.
       parameters:
@@ -94,7 +93,6 @@ paths:
         The Retrieve Signed endpoint checks the service for all deeds that have
         been completely signed by the borrowers or borrower. Only the deeds
         associated with the conveyancer are returned.
-
         The response is a json array output containing the deed references e.g.
         93e806ab-f1bc-4671-be3e-4cc68b21b77a.
       tags:
@@ -118,7 +116,6 @@ paths:
       description: >
         The Make Effective endpoint triggers the service to make a deed
         effective, dating it with the timestamp of when this call is made.
-
         The response includes the Title Number, Property information,
         Borrower(s) information and deed information, as well as the timestamp
         that is saved onto the deed.
@@ -133,11 +130,7 @@ paths:
         - Make Effective
       responses:
         '200':
-          description: A specific deed is returned.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Operative_Deed'
+          description:  A URL to the GET endpoint for the deed returned on successful.
         '400':
           description: >-
             One or more errors have been detected. A list of which should
