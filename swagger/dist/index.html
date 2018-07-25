@@ -41,7 +41,16 @@
 
       // Build a system
       const ui = SwaggerUIBundle({
-        url: "https://raw.githubusercontent.com/LandRegistry/sign-your-mortgage-documentation/gh-pages/schema.yaml",
+        urls: [
+          {
+            url: "https://raw.githubusercontent.com/LandRegistry/sign-your-mortgage-documentation/gh-pages/schema.yaml",
+            name: "deed-api" 
+          },
+          {
+            url: "https://raw.githubusercontent.com/LandRegistry/sign-your-mortgage-documentation/gh-pages/organisation-api-schema.yaml",
+            name: "organisation-api"
+          }
+        ],
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [

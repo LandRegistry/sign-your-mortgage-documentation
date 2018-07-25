@@ -1,0 +1,103 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://bgtest.landregistry.gov.uk/api/organisations'
+  - url: 'https://businessgateway.landregistry.gov.uk/api/organisations'
+  - url: /v1
+info:
+  title: Organisation API
+  description: Land Registry Organisation API
+  version: 2.3.1
+paths:
+  /organisations:
+    get:
+      summary: Organisation
+      operationId: getOrganisations
+      description: >-
+        This endpoint will return a JSON object containing a list of legal
+        organisation names.
+      parameters:
+        - name: Content-Type
+          in: header
+          description: >-
+            Pass 'application/json' to retrieve the organisation list
+            successfully.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: >
+            A list of all legal organisation names will be returned that can
+            then be further queried.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organisation_List'
+  '/organisations/{organisation_id}':
+    get:
+      summary: Organisation
+      operationId: getOrganisation
+      description: >-
+        This endpoint will return a JSON object containing the legal name of a
+        specific organisation.
+      parameters:
+        - name: organisation_id
+          in: path
+          description: >-
+            The non-friendly organisation name for which you require the
+            friendly/legal organisation name.
+          required: true
+          schema:
+            type: string
+        - name: Accept
+          in: header
+          description: >-
+            Pass 'application/json' to retrieve the specified legal organisation
+            name.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: >
+            A specific legal organisation name corresponding to the
+            organisation_name parameter that is returned as a string.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Legal_Organisation_Name'
+        '404':
+          description: Specified organisation could not be found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Legal_Organisation_Name:
+      type: object
+      description: >-
+        A response that returns the legal organisation name for a specified
+        organisation.
+      additionalProperties: false
+      properties:
+        organisation_name:
+          type: string
+          description: The legal organisation name.
+    Organisation_List:
+      description: A response that includes a list of legal organisation names.
+      type: object
+      additionalProperties: false
+      properties:
+        organisation_names:
+          type: array
+          items:
+            type: string
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

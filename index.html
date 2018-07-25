@@ -36,13 +36,20 @@
           The Sign Your Mortgage service allows a conveyancer to create a
           digital mortgage using the interface provided by Deed-API. The
           service also provides endpoints for getting a created deed, checking
-          which deeds have been signed by borrowers and making a deed effective.
+          which deeds have been signed by borrowers, and making a deed effective.
         </p>
         <p>
-          Deeds created using the Deed-Api service can be signed by a borrower
+          Deeds created using the Deed-API service can be signed by a borrower
           using the Sign Your Mortgage service on GOV.UK and submitted to
           HM Land Registry for registration using Business Gateway.
         </p>
+
+        <h4>Organisation-API</h4>
+        <p>
+          As well as the above Deed-API endpoints, the service also provides an endpoint
+          for returning a list of organisation names via Organisation-API.
+        </p>
+
         <div class="schemas">
           <a name="jsonSchemas"><h2>Schemas</h2></a>
           <h4>
@@ -52,34 +59,40 @@
           </h4>
           <h4>
             <a href="https://raw.githubusercontent.com/LandRegistry/sign-your-mortgage-documentation/gh-pages/schema.yaml">
-              YAML Schema File
+              Deed-API YAML Schema File
+            </a>
+          </h4>
+          <h4>
+            <a href="https://raw.githubusercontent.com/LandRegistry/sign-your-mortgage-documentation/gh-pages/organisation-api-schema.yaml">
+              Organisation-API YAML Schema File
             </a>
           </h4>
         </div>
         <div class="schemas">
           <a name="testHub"><h2>Test Hub</h2></a>
           <p>
-            HM Land Registry operates a test hub which runs a test version of
-            the Deed Api service allowing developers to test their solution
+            HM Land Registry operates a Test Hub which runs a test version of
+            the Deed-API service, allowing developers to test their solution
             against a running example of the service.
           </p>
-          <p>Access to the Test Hub is controlled via webseal and you will need
+          <p>
+            Access to the Test Hub is controlled via WebSEAL and you will need
             to request to have your organisation's certificate added to the
             access list.
           </p>
-          <p>The URL's for the Test-Hub are as follows:</p>
+          <p>The URL's for the Test Hub are as follows:</p>
           <h3>Borrower Frontend</h3>
           <a href="https://sign-your-mortgage-deed.landregistry.gov.uk/testhub">
             https://sign-your-mortgage-deed.landregistry.gov.uk/testhub
           </a>
-          <h3>Deed API</h3>
+          <h3>Deed-API</h3>
           <a href="https://bgtest.landregistry.gov.uk/api/deeds">
             https://bgtest.landregistry.gov.uk/api/deeds
           </a>
         </div>
         <div class="schemas">
           <a name="examplePayloads"><h2>Example Payloads and Responses</h2></a>
-          <p>Below are examples of payloads accepted by Deed API and responses.</p>
+          <p>Below are examples of payloads accepted by Deed-API and responses.</p>
           <p>
             <strong>NOTE</strong> This is not an exhaustive example of all
             error messages the system returns but provides an example of the
@@ -248,8 +261,8 @@
           </pre>
           <h3>Generic error</h3>
           <p>
-            for any system error not handled by the system the following error
-            will be returned.
+            For any system error not handled by the system the following error
+            will be returned:
           </p>
           <pre>
             <code>
@@ -266,10 +279,11 @@
             Hub which can be used to test the service. Note that when creating
             a deed the borrowers must be an exact match to the proprietors on
             the register. See example payload above for a create deed payload
-            using the data below that will work in the test hub. Some example
-            test data is below. For a full list click   <a href="https://landregistry.github.io/sign-your-mortgage-documentation/test_data.html">
+            using the data below that will work in the Test Hub. Some example
+            test data is below. For a full list click 
+            <a href="https://landregistry.github.io/sign-your-mortgage-documentation/test_data.html">
                 here
-              </a>
+              </a>.
           </p>
           <h3>Good Title</h3>
           <p><strong>Title number</strong> GR515835</p>
@@ -294,28 +308,37 @@
           <p>
             Once a digital mortgage has been signed and made effective applying
             to have it registered is done using the existing EDRS channel through
-            Land Registrys Business Gateway Portal
-
-            for more information on how to develop for Business Gateway please find the
-            developer documentation here
+            HM Land Registry's Business Gateway Portal.
           </p>
-          <a href="https://www.gov.uk/guidance/business-gateway-developer-pack">Business Gateway Developer Pack</a>
 
-          <p>to submit a digital mortgage follow the steps outlined in the Business Gateway documentation
-             to lodge an Application and add a certified document to follow to the application as shown below</p>
+          <p>
+            For more information on how to develop for Business Gateway please find the
+            developer documentation here 
+            <a href="https://www.gov.uk/guidance/business-gateway-developer-pack">Business Gateway Developer Pack</a>
+          </p>
+          
+          <p>
+            To submit a digital mortgage follow the steps outlined in the Business Gateway documentation
+             to lodge an Application and add a certified document to follow to the application as shown below:
+          </p>
 
              <code>
 &lt;Document&gt;</br>
 &emsp;&lt;CertifiedCopy&gt;Certified&lt;/CertifiedCopy&gt;</br>
 &lt;/Document&gt;</br>
              </code>
-          <p>however once this application has been lodged do not submit a reaquest to lodge the charge document
-             Business Gateway will detect this is a Digital Mortgage and do this for you automatically</p>
+
+          <br />
+
+          <p>
+            However once this application has been lodged <strong>do not</strong> submit a request to lodge the 
+            charge document - Business Gateway will detect that this is a Digital Mortgage and do this for you automatically.
+          </p>
         </div>
       </section>
       <footer>
         <p>This project is maintained by
-          <a href="https://github.com/LandRegistry">LandRegistry</a>
+          <a href="https://github.com/LandRegistry">HM Land Registry</a>
         </p>
         <p>
           <small>Hosted on GitHub Pages &mdash; Theme by
