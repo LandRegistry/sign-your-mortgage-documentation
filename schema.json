@@ -21,7 +21,7 @@
       "post": {
         "summary": "Deed",
         "operationId": "addDeed",
-        "description": "The post Deed endpoint creates a new deed based on the JSON provided.\n The reponse will return a URL that can retrieve the created deed.\n > REQUIRED: Land Registry system requests Conveyancer to confirm that the Borrowers identity has been established in accordance with Section 111 of the Network Access Agreement.",
+        "description": "The post Deed endpoint creates a new deed based on the JSON provided.\n The reponse will return a URL that can retrieve the created deed. \n > REQUIRED: Land Registry system requests Conveyancer to confirm that the Borrowers identity has been established in accordance with Section 111 of the Network Access Agreement.",
         "responses": {
           "201": {
             "description": "A URL to the GET endpoint for the deed returned on successful creation.\n",
@@ -192,6 +192,68 @@
           }
         }
       }
+    },
+    "/deed/{deed_reference}/identity-checks": {
+      "patch": {
+        "summary": "Identity Checks",
+        "description": "The PATCH endpoint compares the borrower information provided with that on the deed. \n If it matches it marks the checks as complete.\n The reponse will return a URL that can retrieve the updated deed. \n > REQUIRED: By calling this endpoint you are confirming that the Borrowers identity has been established in accordance with Section 111 of the Network Access Agreement.",
+        "tags": [
+          "Identity Checks"
+        ],
+        "parameters": [
+          {
+            "name": "deed_reference",
+            "in": "path",
+            "description": "Unique reference of the deed.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A URL to the GET endpoint for the deed returned on success.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request due to invalid schema or check failiure. Response will include 1 or more errors\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Deed not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Identity_Payload"
+              }
+            }
+          },
+          "required": true
+        }
+      }
     }
   },
   "components": {
@@ -278,6 +340,50 @@
           }
         }
       },
+      "IdChecksPrivateIndividual": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "forename",
+          "surname",
+          "dob",
+          "address"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "forename": {
+            "type": "string",
+            "pattern": "^(?!\\s*$).+"
+          },
+          "middle_name": {
+            "type": "string",
+            "pattern": "^(?!\\s*$).+"
+          },
+          "surname": {
+            "type": "string",
+            "pattern": "^(?!\\s*$).+"
+          },
+          "dob": {
+            "type": "string",
+            "pattern": "^(0[1-9]|[12][0-9]|3[01])[\\/\\-](0[1-9]|1[012])[/\\-]\\d{4}$"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "Male",
+              "Female",
+              "Not Specified"
+            ]
+          },
+          "address": {
+            "type": "string",
+            "pattern": "[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9](?:A-Z-245|[^CIKMOV]){2}"
+          }
+        }
+      },
       "ChargeClause": {
         "type": "object",
         "properties": {
@@ -327,6 +433,13 @@
         "minItems": 1,
         "items": {
           "$ref": "#/components/schemas/PrivateIndividualName"
+        }
+      },
+      "IdBorrowers": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "$ref": "#/components/schemas/IdChecksPrivateIndividual"
         }
       },
       "Operative_Deed": {
@@ -396,6 +509,17 @@
           }
         }
       },
+      "Identity_Payload": {
+        "type": "object",
+        "required": [
+          "borrowers"
+        ],
+        "properties": {
+          "borrowers": {
+            "$ref": "#/components/schemas/IdBorrowers"
+          }
+        }
+      },
       "Deed_Application": {
         "type": "object",
         "required": [
@@ -444,6 +568,7 @@
           },
           "proxy_organisation_name": {
             "type": "string",
+            "pattern": "^(?!\\s*$).+",
             "description": "The name of the proxy organisation that will be given permission to perform actions, such as creating or getting a deed."
           }
         }
