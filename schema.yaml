@@ -174,7 +174,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/path_response'
         '400':
           description: >
             Bad Request due to invalid schema or check failiure. Response will
@@ -383,6 +383,14 @@ components:
             effective_date:
               type: string
               description: An effective date is shown if the deed is made effective
+            identity_checked:
+              type: string
+              description: >-
+                Flag showing if the identity checks have been performed for this
+                deed
+              enum:
+                - 'Y'
+                - 'N'
             proxy_organisation_name:
               type: string
               description: >-
@@ -446,12 +454,20 @@ components:
           pattern: ^(?!\s*$).+
           description: >-
             The name of the proxy organisation that will be given permission to
-            perform actions, such as creating or getting a deed.
+            perform actions, such as creating or getting a deed. 
     Error:
       type: object
+      required:
+        - message
       properties:
-        code:
-          type: integer
-          format: int32
         message:
           type: string
+          example: Identity checks have failed. Data provided does not match
+    path_response:
+      type: object
+      required:
+        - path
+      properties:
+        path:
+          type: string
+          example: /deed/e643f282-0ef0-453e-a395-60ec890e1072

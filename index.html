@@ -23,6 +23,8 @@
         </p>
         <p><a href="#aboutThisService">About This Service</a></p>
         <p><a href="#jsonSchemas">Schemas</a></p>
+        <p><a href="#identityChecks">Identity Checks</a></p>
+        <p><a href="#intermediary">Using This Service as an Intermediary</a></p>
         <p><a href="#testHub">Test Hub</a></p>
         <p><a href="#examplePayloads">Example Payloads and Responses</a></p>
         <p><a href="#testData">Test Data</a></p>
@@ -74,6 +76,86 @@
               Organisation-API YAML Schema File
             </a>
           </h4>
+        </div>
+        <div class="schemas">
+          <a name="identityChecks"><h2>Identity Checks</h2></a>
+          <p>
+            Under section 111 of the Network Access Agreement HM Land Registry requests conveyancers to confirm
+            that the borrowers identity has been established.
+          </p>
+          <p>
+            Depending on the business model of your organisation there are two methods you can use to confirm that
+            due diligence has been performed and the borrowers identity has been established.
+          <p>
+          <h3>If the checks will be performed by your organisation when creating a deed</h3>
+          <p>
+            If the borrowers identity will be established by your organisation on create deed you can confirm to
+            HM Land Registry that the checks have been performed by setting the identity_checked value in the create
+            deed payload to "Y".
+          </p>
+          <p>For more information refer to the create deed entry in the
+            <a href="https://raw.githubusercontent.com/LandRegistry/sign-your-mortgage-documentation/gh-pages/schema.yaml">
+            schema
+          </a>.
+        </p>
+        <h3>If the checks will be performed by a different organisation than the one that created the deed</h3>
+        <p>
+          If the checks will be carried out by a different organisation than the one creating the deed then on deed
+          creation the identity_checked value should be set to "N".
+        </p>
+        <p>
+          The organisation carrying out the checks will be able to perform the identity checks by calling the
+          /identity-checked endpoint on the system and providing the name address, ID and date of birth for each borrower.
+        </p>
+        <p>
+          The identity-checked endpoint is documented in the
+          <a href="https://raw.githubusercontent.com/LandRegistry/sign-your-mortgage-documentation/gh-pages/schema.yaml">
+            schema
+          </a>.
+        </p>
+        <p>
+          <b>*NOTE*</b> The borrowers will not be able to sign the deed until the identity checks have been successfully
+          carried out either on creation or by using the identity-checked endpoint.
+        </p>
+        <p><b>BY DOING EITHER OF THE STEPS ABOVE YOU ARE CONFIRMING THAT DUE DILIGENCE HAS BEEN CARRIED OUT AND
+          THE BORROWERS IDENTITY HAS BEEN ESTABLISHED.</b>
+        </p>
+        </div>
+        <div class="schemas">
+          <a name="intermediary"><h2>Using This Service as an Intermediary</h2></a>
+          <p>
+            If you are acting as an intermediary and you will not be the organisation completing the deed then there
+            are additional steps you will need to perform.
+          </p>
+          <p>
+            When creating a deed you will need to set the name of the proxy organisation you intend to assign the deed
+            to.
+          </p>
+          <p>
+            To do this you will need to set the "proxy_organisation_name" field in the create deed payload to the name
+            of the organisation you wish to designate as a proxy. Doing this will then allow the proxy conveyancer to
+            also access the deed and perform identity checks.
+          </p>
+          <p>
+            To get an up to date list of the availible organisations in the service that can be used as a proxy, you
+            can call the get the organisations endpoint in the service that will return an up to date list of all valid
+            organisations.
+          </p>
+          <p>
+            When creating a deed you must provide one of these values in the create deed schema exactly
+            in the format it is provided by the organisations endpoint.
+          </p>
+          <p>
+            For more information on consuming the organisations functionality see the schema file for this endpoint
+            <a href="https://raw.githubusercontent.com/LandRegistry/sign-your-mortgage-documentation/gh-pages/organisation-api-schema.yaml">
+              here
+            </a>.
+          </p>
+            <p>
+              <b>*NOTE*</b> If you set a value in the "proxy_organisation_name" field then only this organisation will
+              be able to make the deed effective.
+            </p>
+          </p>
         </div>
         <div class="schemas">
           <a name="testHub"><h2>Test Hub</h2></a>
@@ -206,6 +288,7 @@
       "registration": "Company registration number: 2347676"
     },
     "md_ref": "e-MD12344",
+    "identity_checked": "Y",
     "property_address": "80 High Street, Plymouth, Devon, PL6 5WS",
     "status": "DRAFT",
     "title_number": "GR515835",
@@ -266,6 +349,49 @@
 }
             </code>
           </pre>
+          <h3>Identity Checks</h3>
+          <h4>PATCH /deed/&lt;Deed Id&gt;/identity-checks</h4>
+          <h5>Payload</h5>
+          <pre>
+            <code>
+{
+  "borrowers": [
+    {
+      "id": 1108,
+      "forename": "Ann",
+      "surname": "Smith",
+      "address": "test address with postcode, PL14 3JR",
+      "dob": "23/01/1985"
+    },
+    {
+      "id": 1109,
+      "forename": "Fredd",
+      "surname": "Smith",
+      "address": "test address with postcode, PL14 3JR",
+      "dob": "23/01/1985"
+
+    }
+  ]
+}
+            </code>
+          </pre>
+          <h5>Responses</h5>
+          200 OK
+          <pre>
+            <code>
+{
+  "path": "/deed/0729e738-c073-445f-8976-9c81bbecf5c7"
+}
+            </code>
+          </pre>
+          400 BAD REQUEST
+          <pre>
+            <code>
+{
+  "message": "Identity checks have failed. Data provided does not match"
+}
+            </code>
+          </pre>
           <h3>Generic error</h3>
           <p>
             For any system error not handled by the system the following error
@@ -287,7 +413,7 @@
             a deed the borrowers must be an exact match to the proprietors on
             the register. See example payload above for a create deed payload
             using the data below that will work in the Test Hub. Some example
-            test data is below. For a full list click 
+            test data is below. For a full list click
             <a href="https://landregistry.github.io/sign-your-mortgage-documentation/test_data.html">
                 here
               </a>.
@@ -320,10 +446,10 @@
 
           <p>
             For more information on how to develop for Business Gateway please find the
-            developer documentation here 
+            developer documentation here
             <a href="https://www.gov.uk/guidance/business-gateway-developer-pack">Business Gateway Developer Pack</a>
           </p>
-          
+
           <p>
             To submit a digital mortgage follow the steps outlined in the Business Gateway documentation
              to lodge an Application and add a certified document to follow to the application as shown below:
@@ -338,7 +464,7 @@
           <br />
 
           <p>
-            However once this application has been lodged <strong>do not</strong> submit a request to lodge the 
+            However once this application has been lodged <strong>do not</strong> submit a request to lodge the
             charge document - Business Gateway will detect that this is a Digital Mortgage and do this for you automatically.
           </p>
         </div>
