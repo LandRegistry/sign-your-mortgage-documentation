@@ -84,8 +84,8 @@
             that the borrowers identity has been established.
           </p>
           <p>
-            Depending on the buisiness model of your organisation there are two methods you can use to confirm that
-            due dilligence has been performed and the borrowers identity has been established.
+            Depending on the business model of your organisation there are two methods you can use to confirm that
+            due diligence has been performed and the borrowers identity has been established.
           <p>
           <h3>If the checks will be performed by your organisation when creating a deed</h3>
           <p>
@@ -117,7 +117,7 @@
           <b>*NOTE*</b> The borrowers will not be able to sign the deed until the identity checks have been successfully
           carried out either on creation or by using the identity-checked endpoint.
         </p>
-        <p><b>BY DOING EITHER OF THE STEPS ABOVE YOU ARE CONFIRMING THAT DUE DILLIGENCE HAS BEEN CARRIED OUT AND
+        <p><b>BY DOING EITHER OF THE STEPS ABOVE YOU ARE CONFIRMING THAT DUE DILIGENCE HAS BEEN CARRIED OUT AND
           THE BORROWERS IDENTITY HAS BEEN ESTABLISHED.</b>
         </p>
         </div>
@@ -152,7 +152,7 @@
             </a>.
           </p>
             <p>
-              <b>*NOTE*</b> IF you set a value in the "proxy_organisation_name" field then only this organisation will
+              <b>*NOTE*</b> If you set a value in the "proxy_organisation_name" field then only this organisation will
               be able to make the deed effective.
             </p>
           </p>
@@ -360,7 +360,6 @@
       "id": 1108,
       "forename": "Ann",
       "surname": "Smith",
-      "gender": "Female",
       "address": "test address with postcode, PL14 3JR",
       "dob": "23/01/1985"
     },
@@ -368,7 +367,6 @@
       "id": 1109,
       "forename": "Fredd",
       "surname": "Smith",
-      "gender": "Female",
       "address": "test address with postcode, PL14 3JR",
       "dob": "23/01/1985"
 
@@ -381,6 +379,17 @@
           200 OK
           <pre>
             <code>
+{
+  "path": "/deed/0729e738-c073-445f-8976-9c81bbecf5c7"
+}
+            </code>
+          </pre>
+          400 BAD REQUEST
+          <pre>
+            <code>
+{
+  "message": "Identity checks have failed. Data provided does not match"
+}
             </code>
           </pre>
           <h3>Generic error</h3>
