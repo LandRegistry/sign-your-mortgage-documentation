@@ -1,7 +1,7 @@
 openapi: 3.0.0
 servers:
-  - url: 'https://bgtest.landregistry.gov.uk/api/organisations'
-  - url: 'https://businessgateway.landregistry.gov.uk/api/organisations'
+  - url: 'https://bgtest.landregistry.gov.uk/api'
+  - url: 'https://businessgateway.landregistry.gov.uk/api'
   - url: /v1
 info:
   title: Organisation API
