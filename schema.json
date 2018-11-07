@@ -595,7 +595,7 @@
             "example": [
               "Schema errors",
               "Title Validation Error",
-              "Invalid of the request for the title in questions"
+              "Invalid request for the provided title"
             ]
           }
         }

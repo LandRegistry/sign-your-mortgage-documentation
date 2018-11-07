@@ -473,7 +473,7 @@ components:
           example:
             - Schema errors
             - Title Validation Error
-            - Invalid of the request for the title in questions
+            - Invalid equest for the provided title
     deed_effective_error:
       title: The format of errors returned when attempting to make a deed effective
       type: object
