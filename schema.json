@@ -21,7 +21,7 @@
       "post": {
         "summary": "Deed",
         "operationId": "addDeed",
-        "description": "The post Deed endpoint creates a new deed based on the JSON provided.\n The reponse will return a URL that can retrieve the created deed. \n > REQUIRED: Land Registry system requests Conveyancer to confirm that the Borrowers identity has been established in accordance with Section 111 of the Network Access Agreement.",
+        "description": "The post Deed endpoint creates a new deed based on the JSON provided.\n The reponse will return a URL that can retrieve the created deed.\n > REQUIRED: Land Registry system requests Conveyancer to confirm that the Borrowers identity has been established in accordance with Section 111 of the Network Access Agreement.",
         "responses": {
           "201": {
             "description": "A URL to the GET endpoint for the deed returned on successful creation.\n",
@@ -38,7 +38,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/deed_create_error"
                 }
               }
             }
@@ -104,12 +104,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/deed_not_found"
                 }
               },
               "application/pdf": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/deed_not_found"
                 }
               }
             }
@@ -140,7 +140,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/deed_not_found"
                 }
               }
             }
@@ -175,7 +175,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/deed_effective_error"
                 }
               }
             }
@@ -185,7 +185,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/deed_not_found"
                 }
               }
             }
@@ -196,7 +196,7 @@
     "/deed/{deed_reference}/identity-checks": {
       "patch": {
         "summary": "Identity Checks",
-        "description": "The PATCH endpoint compares the borrower information provided with that on the deed. \n If it matches it marks the checks as complete.\n The reponse will return a URL that can retrieve the updated deed. \n > REQUIRED: By calling this endpoint you are confirming that the Borrowers identity has been established in accordance with Section 111 of the Network Access Agreement.",
+        "description": "The PATCH endpoint compares the borrower information provided with that on the deed.\n If it matches it marks the checks as complete.\n The reponse will return a URL that can retrieve the updated deed.\n > REQUIRED: By calling this endpoint you are confirming that the Borrowers identity has been established in accordance with Section 111 of the Network Access Agreement.",
         "tags": [
           "Identity Checks"
         ],
@@ -223,11 +223,11 @@
             }
           },
           "400": {
-            "description": "Bad Request due to invalid schema or check failiure. Response will include 1 or more errors\n",
+            "description": "Bad Request due to invalid schema or check failure. Response will include 1 or more errors\n",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/id_checks_error"
                 }
               }
             }
@@ -237,7 +237,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/deed_not_found"
                 }
               }
             }
@@ -573,15 +573,62 @@
           }
         }
       },
-      "Error": {
+      "deed_not_found": {
+        "title": "The format of errors returned when attempting to get a deed",
         "type": "object",
-        "required": [
-          "message"
-        ],
         "properties": {
           "message": {
             "type": "string",
-            "example": "Identity checks have failed. Data provided does not match"
+            "example": "deed not found error"
+          }
+        }
+      },
+      "deed_create_error": {
+        "title": "The format of errors returned when attempting to create a deed",
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Schema errors",
+              "Title Validation Error",
+              "Invalid of the request for the title in questions"
+            ]
+          }
+        }
+      },
+      "deed_effective_error": {
+        "title": "The format of errors returned when attempting to make a deed effective",
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "error",
+              "make effective error"
+            ]
+          }
+        }
+      },
+      "id_checks_error": {
+        "title": "The format of errors returned when attempting to complete identity checks",
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "error",
+              "an id check error"
+            ]
           }
         }
       },
