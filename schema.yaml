@@ -1,7 +1,7 @@
 openapi: 3.0.0
 servers:
-  - url: 'https://bgtest.landregistry.gov.uk/api/deeds'
-  - url: 'https://businessgateway.landregistry.gov.uk/api/deeds'
+  - url: "https://bgtest.landregistry.gov.uk/api/deeds"
+  - url: "https://businessgateway.landregistry.gov.uk/api/deeds"
   - url: /v1
 info:
   title: Deed API
@@ -32,7 +32,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/deed_create_error'
       requestBody:
         content:
           application/json:
@@ -83,10 +83,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/deed_not_found'
             application/pdf:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/deed_not_found'
   /deed/retrieve-signed:
     get:
       summary: Retrieves ALL-SIGNED deed(s).
@@ -111,7 +111,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/deed_not_found'
   '/deed/{deed_reference}/make-effective':
     post:
       summary: Make Effective
@@ -142,13 +142,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/deed_effective_error'
         '404':
           description: Deed not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/deed_not_found'
   '/deed/{deed_reference}/identity-checks':
     patch:
       summary: Identity Checks
@@ -177,18 +177,18 @@ paths:
                 $ref: '#/components/schemas/path_response'
         '400':
           description: >
-            Bad Request due to invalid schema or check failiure. Response will
+            Bad Request due to invalid schema or check failure. Response will
             include 1 or more errors
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/id_checks_error'
         '404':
           description: Deed not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/deed_not_found'
       requestBody:
         content:
           application/json:
@@ -454,15 +454,50 @@ components:
           pattern: ^(?!\s*$).+
           description: >-
             The name of the proxy organisation that will be given permission to
-            perform actions, such as creating or getting a deed. 
-    Error:
+            perform actions, such as creating or getting a deed.
+    deed_not_found:
+      title: The format of errors returned when attempting to get a deed
       type: object
-      required:
-        - message
       properties:
         message:
           type: string
-          example: Identity checks have failed. Data provided does not match
+          example: deed not found error
+    deed_create_error:
+      title: The format of errors returned when attempting to create a deed
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+          example:
+            - Schema errors
+            - Title Validation Error
+            - Invalid equest for the provided title
+    deed_effective_error:
+      title: The format of errors returned when attempting to make a deed effective
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+          example:
+            - error
+            - make effective error
+    id_checks_error:
+      title: >-
+        The format of errors returned when attempting to complete identity
+        checks
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+          example:
+            - error
+            - an id check error
     path_response:
       type: object
       required:
