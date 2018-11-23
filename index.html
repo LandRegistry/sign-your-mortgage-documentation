@@ -241,7 +241,44 @@
 }
             </code>
           </pre>
-          <h3>Get Deed</h3>
+
+        <h3>Terminate Deed</h3>
+        <h4>PATCH /deed/&lt;Deed Id&gt;/terminate-deed</h4>
+        <h5>Responses</h5>
+        200 OK
+            <pre>
+                <code>
+{
+  "path": "/deed/0729e738-c073-445f-8976-9c81bbecf5c7"
+}
+                </code>
+            </pre>
+            400 Bad Request
+            <pre>
+                <code>
+{
+    "message": "organisation abc failed to terminate deed: 0729e738-c073-445f-8976-9c81bbecf5c7"
+}
+                </code>
+            </pre>
+            401 Unauthenticated
+            <pre>
+                <code>
+{
+    "message": "Failed to terminate deed for reference: 0729e738-c073-445f-8976-9c81bbecf5c7"
+}
+                </code>
+            </pre>
+            404 Not Found
+            <pre>
+                <code>
+{
+    "message": "Deed reference 0729e738-c073-445f-8976-9c81bbecf5c7 is not valid"
+}
+                </code>
+            </pre>
+
+            <h3>Get Deed</h3>
           <h4>GET /deed/&lt;Deed Id&gt;</h4>
           <h5>Responses</h5>
           200 OK
