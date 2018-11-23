@@ -149,6 +149,59 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/deed_not_found'
+  '/deed/{deed_reference}/terminate-deed':
+    patch:
+      summary: >-
+        This endpoint sets a deed status to TERMINATED or EXPIRED if called by a
+        polling job, and removes personal data
+      description: >-
+        This PATCH endpoint will set the status of the incoming deed to
+        TERMINATED or EXPIRED and will remove any personal data associated with
+        the deed.
+      tags:
+        - Terminate deed
+      parameters:
+        - name: deed_reference
+          in: path
+          description: Unique reference of the deed.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: >
+            A URL to the GET endpoint for the deed returned on successful
+            termination.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/path_response'
+        '400':
+          description: |
+            Bad request returned when terminating deed
+          content:
+            application/json:
+              schema:
+                type: string
+                example:
+                  message: ' failed to terminate deed: '
+        '401':
+          description: |
+            A message stating that deed termination has failed
+          content:
+            application/json:
+              schema:
+                type: string
+                example:
+                  message: 'Failed to terminate deed for reference: '
+        '404':
+          description: A message stating that the deed reference is not valid.
+          content:
+            application/json:
+              schema:
+                type: string
+                example:
+                  message: deed reference  is not valid
   '/deed/{deed_reference}/identity-checks':
     patch:
       summary: Identity Checks
@@ -473,7 +526,7 @@ components:
           example:
             - Schema errors
             - Title Validation Error
-            - Invalid equest for the provided title
+            - Invalid request for the provided title
     deed_effective_error:
       title: The format of errors returned when attempting to make a deed effective
       type: object
