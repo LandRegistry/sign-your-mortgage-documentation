@@ -476,6 +476,10 @@ components:
         identity_checked:
           pattern: '^[Y|N]$'
           type: string
+        is_second_charge:
+          pattern: '^[Y|N]$'
+          type: string
+          description: This is to confirm whether or not this will be for a second charge.
         property_address:
           pattern: ^(?!\s*$).+
           type: string
