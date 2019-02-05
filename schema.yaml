@@ -202,7 +202,7 @@ paths:
                 type: string
                 example:
                   message: deed reference  is not valid
-   '/deed/{deed_reference}/extend-deed':
+  '/deed/{deed_reference}/extend-deed':
     patch:
       summary: >-
         This endpoint adds ninety days to the current expiry date of a deed if it meets the criteria of being within ninety days of expiry
