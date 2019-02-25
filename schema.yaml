@@ -1,7 +1,7 @@
 openapi: 3.0.0
 servers:
-  - url: "https://bgtest.landregistry.gov.uk/api/deeds"
-  - url: "https://businessgateway.landregistry.gov.uk/api/deeds"
+  - url: 'https://bgtest.landregistry.gov.uk/api/deeds'
+  - url: 'https://businessgateway.landregistry.gov.uk/api/deeds'
   - url: /v1
 info:
   title: Deed API
@@ -18,17 +18,15 @@ paths:
          > REQUIRED: Land Registry system requests Conveyancer to confirm that the Borrowers identity has been established in accordance with Section 111 of the Network Access Agreement.
       responses:
         '201':
-          description: >
-            A URL to the GET endpoint for the deed returned on successful
-            creation.
+          description: |
+            A URL to the GET endpoint for the deed returned on successful creation.
           content:
             application/json:
               schema:
                 type: string
         '400':
-          description: >
-            Bad Request due to invalid schema. Response will include 1 or more
-            schema errors
+          description: |
+            Bad Request due to invalid schema. Response will include 1 or more schema errors
           content:
             application/json:
               schema:
@@ -42,12 +40,9 @@ paths:
   '/deed/{deed_reference}':
     get:
       summary: Deed
-      description: >
-        The Deed endpoint returns details of a specific deed based on the unique
-        deed reference.
-
-        The response includes the Title Number, Property information,
-        Borrower(s) information and deed information.
+      description: |
+        The Deed endpoint returns details of a specific deed based on the unique deed reference.
+        The response includes the Title Number, Property information, Borrower(s) information and deed information.
       parameters:
         - name: deed_reference
           in: path
@@ -57,9 +52,7 @@ paths:
             type: string
         - name: Accept
           in: header
-          description: >-
-            Pass application/json for the deed as JSON or application/pdf to get
-            a pdf
+          description: Pass application/json for the deed as JSON or application/pdf to get a pdf
           required: true
           schema:
             type: string
@@ -67,10 +60,8 @@ paths:
         - Deed
       responses:
         '200':
-          description: >
-            A specific deed is returned in Operative Deed Format
-            (application/json header). If the application/pdf header is given
-            instead. This will return a PDF Document of the requested Deed.
+          description: |
+            A specific deed is returned in Operative Deed Format (application/json header). If the application/pdf header is given instead. This will return a PDF Document of the requested Deed.
           content:
             application/json:
               schema:
@@ -90,13 +81,9 @@ paths:
   /deed/retrieve-signed:
     get:
       summary: Retrieves ALL-SIGNED deed(s).
-      description: >
-        The Retrieve Signed endpoint checks the service for all deeds that have
-        been completely signed by the borrowers or borrower. Only the deeds
-        associated with the conveyancer are returned.
-
-        The response is a json array output containing the deed references e.g.
-        93e806ab-f1bc-4671-be3e-4cc68b21b77a.
+      description: |
+        The Retrieve Signed endpoint checks the service for all deeds that have been completely signed by the borrowers or borrower. Only the deeds associated with the conveyancer are returned.
+        The response is a json array output containing the deed references e.g. 93e806ab-f1bc-4671-be3e-4cc68b21b77a.
       tags:
         - Retrieve all signed deeds
       responses:
@@ -112,16 +99,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/deed_not_found'
+  /deed/in-progress:
+    get:
+      summary: Retrieves deed(s) that are in-progress.
+      description: |
+        Retrieves deed(s) that have a status of DRAFT, PARTIALLY_SIGNED or ALL_SIGNED.Only the deeds associated with the conveyancer are returned.
+        The response is a json array containing a json object for each deed that is in progress, this will contain the deed reference, expiry date, identity checked status and borrowers array. The borrowers array will contain a list of borrowers related to the deed and will contain the surname, firstname and signature status.
+      tags:
+        - Retrieve in progress deeds
+      responses:
+        '200':
+          description: Any deed(s) that are in-progress are returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/In_Progress_Deed'
   '/deed/{deed_reference}/make-effective':
     post:
       summary: Make Effective
-      description: >
-        The Make Effective endpoint triggers the service to make a deed
-        effective, dating it with the timestamp of when this call is made.
-
-        The response includes the Title Number, Property information,
-        Borrower(s) information and deed information, as well as the timestamp
-        that is saved onto the deed.
+      description: |
+        The Make Effective endpoint triggers the service to make a deed effective, dating it with the timestamp of when this call is made.
+        The response includes the Title Number, Property information, Borrower(s) information and deed information, as well as the timestamp that is saved onto the deed.
       parameters:
         - name: deed_reference
           in: path
@@ -135,9 +133,8 @@ paths:
         '200':
           description: A URL to the GET endpoint for the deed returned on successful.
         '400':
-          description: >-
-            One or more errors have been detected. A list of which should
-            accompany this response.
+          description: |-
+            One or more errors have been detected. A list of which should accompany this response.
              This is most likely to occur if the deed has already been made effective, or if not all borrowers have signed the deed.
           content:
             application/json:
@@ -151,13 +148,8 @@ paths:
                 $ref: '#/components/schemas/deed_not_found'
   '/deed/{deed_reference}/terminate-deed':
     patch:
-      summary: >-
-        This endpoint sets a deed status to TERMINATED or EXPIRED if called by a
-        polling job, and removes personal data
-      description: >-
-        This PATCH endpoint will set the status of the incoming deed to
-        TERMINATED or EXPIRED and will remove any personal data associated with
-        the deed.
+      summary: 'This endpoint sets a deed status to TERMINATED or EXPIRED if called by a polling job, and removes personal data'
+      description: This PATCH endpoint will set the status of the incoming deed to TERMINATED or EXPIRED and will remove any personal data associated with the deed.
       tags:
         - Terminate deed
       parameters:
@@ -169,9 +161,8 @@ paths:
             type: string
       responses:
         '200':
-          description: >
-            A URL to the GET endpoint for the deed returned on successful
-            termination.
+          description: |
+            A URL to the GET endpoint for the deed returned on successful termination.
           content:
             application/json:
               schema:
@@ -204,10 +195,8 @@ paths:
                   message: deed reference  is not valid
   '/deed/{deed_reference}/extend-deed':
     patch:
-      summary: >-
-        This endpoint adds ninety days to the current expiry date of a deed if it meets the criteria of being within ninety days of expiry
-      description: >-
-        This PATCH endpoint will add ninety days to the current expiry date of the deed if it meets the criteria of being within ninety days of expiry
+      summary: This endpoint adds ninety days to the current expiry date of a deed if it meets the criteria of being within ninety days of expiry
+      description: This PATCH endpoint will add ninety days to the current expiry date of the deed if it meets the criteria of being within ninety days of expiry
       tags:
         - Extend deed
       parameters:
@@ -219,9 +208,8 @@ paths:
             type: string
       responses:
         '200':
-          description: >
-            A URL to the GET endpoint for the deed returned on successful
-            extension.
+          description: |
+            A URL to the GET endpoint for the deed returned on successful extension.
           content:
             application/json:
               schema:
@@ -234,7 +222,7 @@ paths:
               schema:
                 type: string
                 example:
-                  message: 'Failed to extend deed <deed_reference>. Deed does not meet criteria for extension.'
+                  message: Failed to extend deed <deed_reference>. Deed does not meet criteria for extension.
         '401':
           description: |
             A message stating that deed extension has failed
@@ -263,9 +251,8 @@ paths:
   '/deed/{deed_reference}/identity-checks':
     patch:
       summary: Identity Checks
-      description: >-
-        The PATCH endpoint compares the borrower information provided with that
-        on the deed.
+      description: |-
+        The PATCH endpoint compares the borrower information provided with that on the deed.
          If it matches it marks the checks as complete.
          The reponse will return a URL that can retrieve the updated deed.
          > REQUIRED: By calling this endpoint you are confirming that the Borrowers identity has been established in accordance with Section 111 of the Network Access Agreement.
@@ -287,9 +274,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/path_response'
         '400':
-          description: >
-            Bad Request due to invalid schema or check failure. Response will
-            include 1 or more errors
+          description: |
+            Bad Request due to invalid schema or check failure. Response will include 1 or more errors
           content:
             application/json:
               schema:
@@ -336,6 +322,18 @@ components:
         signature:
           description: Date and time the signature was applied.
           type: string
+    InProgressIndividualName:
+      type: object
+      properties:
+        forename:
+          type: string
+        surname:
+          type: string
+        signature:
+          type: string
+          enum:
+            - 'Y'
+            - 'N'
     PrivateIndividualName:
       type: object
       additionalProperties: false
@@ -431,29 +429,49 @@ components:
       minItems: 1
       items:
         $ref: '#/components/schemas/PrivateIndividualName'
+    InProgressBorrowers:
+      type: array
+      minItems: 1
+      items:
+        $ref: '#/components/schemas/InProgressIndividualName'
     IdBorrowers:
       type: array
       minItems: 1
       items:
         $ref: '#/components/schemas/IdChecksPrivateIndividual'
+    In_Progress_Deed:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Current state of the deed
+        token:
+          type: string
+          description: The ID of the deed
+        expiry_date:
+          type: string
+          description: This is a timestamp representing when the deed will expire if no further interactions with the deed have taken place.
+        identity_checked:
+          type: string
+          description: Flag showing if the identity checks have been performed for this deed
+          enum:
+            - 'Y'
+            - 'N'
+        borrowers:
+          $ref: '#/components/schemas/InProgressBorrowers'
     Operative_Deed:
       type: object
       properties:
         deed:
           type: object
-          description: >-
-            Unique deed, consisting of property, borrower and charge information
-            as well as clauses for the deed.
+          description: 'Unique deed, consisting of property, borrower and charge information as well as clauses for the deed.'
           properties:
             title_number:
               type: string
               description: Unique Land Registry identifier for the registered estate.
             md_ref:
               type: string
-              description: >-
-                Land Registry assigned number for a Mortgage Deed (MD). If you
-                wish to use an existing MD reference please prefix it with e- to
-                comply with our system (eg e-MD12345)
+              description: Land Registry assigned number for a Mortgage Deed (MD). If you wish to use an existing MD reference please prefix it with e- to comply with our system (eg e-MD12345)
             borrowers:
               $ref: '#/components/schemas/OpBorrowers'
             charge_clause:
@@ -467,24 +485,17 @@ components:
               description: Text to display the make effective clause
             property_address:
               type: string
-              description: >-
-                The address of property that the deed relates. This should be
-                supplied in a comma separated format e.g. 30 wakefield rd,
-                plymouth, PL6 3WA
+              description: 'The address of property that the deed relates. This should be supplied in a comma separated format e.g. 30 wakefield rd, plymouth, PL6 3WA'
             reference:
               type: string
               maxLength: 50
               pattern: ^(?!\s*$).+
-              description: >-
-                A conveyancer reference.  Can be displayed on the deed if the
-                mortgage document template permits.
+              description: A conveyancer reference.  Can be displayed on the deed if the mortgage document template permits.
             date_of_mortgage_offer:
               type: string
               maxLength: 50
               pattern: ^(?!\s*$).+
-              description: >-
-                Date that the mortgage offer was made.  Can be displayed on the
-                deed if the mortgage document template permits.
+              description: Date that the mortgage offer was made.  Can be displayed on the deed if the mortgage document template permits.
             deed_status:
               type: string
               description: Current state of the deed
@@ -496,17 +507,13 @@ components:
               description: An effective date is shown if the deed is made effective
             identity_checked:
               type: string
-              description: >-
-                Flag showing if the identity checks have been performed for this
-                deed
+              description: Flag showing if the identity checks have been performed for this deed
               enum:
                 - 'Y'
                 - 'N'
             proxy_organisation_name:
               type: string
-              description: >-
-                The name of the proxy organisation that will be given permission
-                to perform actions, such as creating or getting a deed.
+              description: 'The name of the proxy organisation that will be given permission to perform actions, such as creating or getting a deed.'
     Identity_Payload:
       type: object
       required:
@@ -541,35 +548,24 @@ components:
         property_address:
           pattern: ^(?!\s*$).+
           type: string
-          description: >-
-            The address of property that the deed relates. This should be
-            supplied in a comma separated format e.g. 30 wakefield rd, plymouth,
-            PL6 3WA
+          description: 'The address of property that the deed relates. This should be supplied in a comma separated format e.g. 30 wakefield rd, plymouth, PL6 3WA'
         reference:
           type: string
           maxLength: 50
           pattern: ^(?!\s*$).+
-          description: >-
-            A conveyancer reference.  Can be displayed on the deed if the
-            mortgage document template permits.
+          description: A conveyancer reference.  Can be displayed on the deed if the mortgage document template permits.
         date_of_mortgage_offer:
           type: string
           maxLength: 50
           pattern: ^(?!\s*$).+
-          description: >-
-            Date that the mortgage offer was made.  Can be displayed on the deed
-            if the mortgage document template permits.
+          description: Date that the mortgage offer was made.  Can be displayed on the deed if the mortgage document template permits.
         deed_effector:
           type: string
-          description: >-
-            Name of the legal deed effector. To be used where the legal deed
-            effector name is different to that of the conveyancer.
+          description: Name of the legal deed effector. To be used where the legal deed effector name is different to that of the conveyancer.
         proxy_organisation_name:
           type: string
           pattern: ^(?!\s*$).+
-          description: >-
-            The name of the proxy organisation that will be given permission to
-            perform actions, such as creating or getting a deed.
+          description: 'The name of the proxy organisation that will be given permission to perform actions, such as creating or getting a deed.'
     deed_not_found:
       title: The format of errors returned when attempting to get a deed
       type: object
@@ -601,9 +597,7 @@ components:
             - error
             - make effective error
     id_checks_error:
-      title: >-
-        The format of errors returned when attempting to complete identity
-        checks
+      title: The format of errors returned when attempting to complete identity checks
       type: object
       properties:
         errors:

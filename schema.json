@@ -148,6 +148,27 @@
         }
       }
     },
+    "/deed/in-progress": {
+      "get": {
+        "summary": "Retrieves deed(s) that are in-progress.",
+        "description": "Retrieves deed(s) that have a status of DRAFT, PARTIALLY_SIGNED or ALL_SIGNED.Only the deeds associated with the conveyancer are returned.\nThe response is a json array containing a json object for each deed that is in progress, this will contain the deed reference, expiry date, identity checked status and borrowers array. The borrowers array will contain a list of borrowers related to the deed and will contain the surname, firstname and signature status.\n",
+        "tags": [
+          "Retrieve in progress deeds"
+        ],
+        "responses": {
+          "200": {
+            "description": "Any deed(s) that are in-progress are returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/In_Progress_Deed"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/deed/{deed_reference}/make-effective": {
       "post": {
         "summary": "Make Effective",
@@ -265,59 +286,88 @@
       }
     },
     "/deed/{deed_reference}/extend-deed": {
-        "patch": {
-            "summary": "This endpoint adds ninety days to the current expiry date of a deed if it meets the criteria of being within ninety days of expiry",
-            "description": "This PATCH endpoint will add ninety days to the current expiry date of the deed if it meets the criteria of being within ninety days of expiry",
-            "produces": [
-                "application/json"
-            ],
-            "tags": [
-                "Extend deed"
-            ],
-            "parameters": [{
-                "name": "deed_reference",
-                "in": "path",
-                "description": "Unique reference of the deed.",
-                "required": true,
-                "type": "string"
-            }],
-            "responses": {
-                "200": {
-                    "description": "A URL to the GET endpoint for the deed returned on successful extension.\n",
-                    "schema": {
-                        "$ref": "#/definitions/path_response"
-                    }
-                },
-                "400": {
-                    "description": "Bad request returned when extending deed\n",
-                    "schema": {
-                        "type": "string",
-                        "example": {"message": "Failed to extend deed <deed_reference>. Deed does not meet criteria for extension."}
-                    }
-                },
-                "401": {
-                    "description": "A message stating that deed extension has failed\n",
-                    "schema": {
-                        "type": "string",
-                        "example": {"message": "Failed to extend deed for reference: <deed_reference>"}
-                    }
-                },
-                "403": {
-                    "description": "A message stating that the deed cannot be extended\n",
-                    "schema": {
-                        "type": "string",
-                        "example": {"message": "This deed cannot be extended"}
-                    }
-                },
-                "404": {
-                    "description": "A message stating that the deed reference is not valid.",
-                    "schema": {
-                        "type": "string",
-                        "example": {"message": "deed reference <deed_reference> is not valid"}
-                    }
-                }
+      "patch": {
+        "summary": "This endpoint adds ninety days to the current expiry date of a deed if it meets the criteria of being within ninety days of expiry",
+        "description": "This PATCH endpoint will add ninety days to the current expiry date of the deed if it meets the criteria of being within ninety days of expiry",
+        "tags": [
+          "Extend deed"
+        ],
+        "parameters": [
+          {
+            "name": "deed_reference",
+            "in": "path",
+            "description": "Unique reference of the deed.",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A URL to the GET endpoint for the deed returned on successful extension.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/path_response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request returned when extending deed\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "message": "Failed to extend deed <deed_reference>. Deed does not meet criteria for extension."
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A message stating that deed extension has failed\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "message": "Failed to extend deed for reference: "
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "A message stating that the deed cannot be extended.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "message": "This deed cannot be extended"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "A message stating that the deed reference is not valid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": {
+                    "message": "deed reference <deed_reference> is not valid"
+                  }
+                }
+              }
+            }
+          }
         }
+      }
     },
     "/deed/{deed_reference}/identity-checks": {
       "patch": {
@@ -418,6 +468,24 @@
           "signature": {
             "description": "Date and time the signature was applied.",
             "type": "string"
+          }
+        }
+      },
+      "InProgressIndividualName": {
+        "type": "object",
+        "properties": {
+          "forename": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string",
+            "enum": [
+              "Y",
+              "N"
+            ]
           }
         }
       },
@@ -553,11 +621,46 @@
           "$ref": "#/components/schemas/PrivateIndividualName"
         }
       },
+      "InProgressBorrowers": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "$ref": "#/components/schemas/InProgressIndividualName"
+        }
+      },
       "IdBorrowers": {
         "type": "array",
         "minItems": 1,
         "items": {
           "$ref": "#/components/schemas/IdChecksPrivateIndividual"
+        }
+      },
+      "In_Progress_Deed": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Current state of the deed"
+          },
+          "token": {
+            "type": "string",
+            "description": "The ID of the deed"
+          },
+          "expiry_date": {
+            "type": "string",
+            "description": "This is a timestamp representing when the deed will expire if no further interactions with the deed have taken place."
+          },
+          "identity_checked": {
+            "type": "string",
+            "description": "Flag showing if the identity checks have been performed for this deed",
+            "enum": [
+              "Y",
+              "N"
+            ]
+          },
+          "borrowers": {
+            "$ref": "#/components/schemas/InProgressBorrowers"
+          }
         }
       },
       "Operative_Deed": {
