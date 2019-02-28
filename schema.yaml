@@ -113,7 +113,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/In_Progress_Deed'
+                oneOf:
+                  - $ref: '#/definitions/In_Progress_Deed'
+                  - $ref: '#/definitions/In_Progress_Deed_Empty'
   '/deed/{deed_reference}/make-effective':
     post:
       summary: Make Effective
@@ -439,6 +441,13 @@ components:
       minItems: 1
       items:
         $ref: '#/components/schemas/IdChecksPrivateIndividual'
+    In_Progress_Deed_Empty:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A message stating why no in-progress deeds were returned
+          example: There are currently no in-progress deeds
     In_Progress_Deed:
       type: object
       properties:
