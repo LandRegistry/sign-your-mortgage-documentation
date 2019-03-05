@@ -114,8 +114,8 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '#/definitions/In_Progress_Deed'
-                  - $ref: '#/definitions/In_Progress_Deed_Empty'
+                  - $ref: '#/components/schemas/In_Progress_Deed'
+                  - $ref: '#/components/schemas/In_Progress_Deed_Empty'
   '/deed/{deed_reference}/make-effective':
     post:
       summary: Make Effective
