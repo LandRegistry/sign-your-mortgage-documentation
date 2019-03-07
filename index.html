@@ -314,8 +314,61 @@
 }
                 </code>
             </pre>
-
-
+        <h3>In-Progress Deed</h3>
+        <h4>GET /deed/in-progress</h4>
+        <h5>Responses</h5>
+        200 OK
+            <pre>
+                <code>
+[
+  {
+    "expiry_date": "2019-09-01T09:58:50.982351+00:00",
+    "identity_checked": "Y",
+    "borrowers": [
+      {
+        "surname": "Smith",
+        "id": 338,
+        "signature": "N",
+        "middle_name": null,
+        "forename": "Ann"
+      },
+      {
+        "surname": "Smith",
+        "id": 339,
+        "signature": "N",
+        "middle_name": null,
+        "forename": "Fredd"
+      }
+    ],
+    "token": "27805ec4-3f80-439d-84f4-492e89c78d15",
+    "status": "DRAFT"
+  }
+]
+                </code>
+            </pre>
+            <pre>
+              <code>
+{
+    "message": "There are currently no in-progress deeds"
+}
+              </code>
+            </pre>
+            401 Unauthenticated
+            <pre>
+                <code>
+{
+    "message": "Failed to retrieve in-progress deeds"
+}
+                </code>
+            </pre>
+            500 Internal Server Error
+            <pre>
+                <code>
+{
+  "message": "Failed to retrieve in-progress deeds"
+}
+                </code>
+            </pre>
             <h3>Get Deed</h3>
           <h4>GET /deed/&lt;Deed Id&gt;</h4>
           <h5>Responses</h5>
