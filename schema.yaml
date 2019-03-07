@@ -93,10 +93,10 @@ paths:
   /deed/in-progress:
     get:
       summary: Retrieves deed(s) that are in-progress.
-      description: |-
+      description: |
         Retrieves deed(s) that have a status of DRAFT, PARTIALLY_SIGNED or ALL_SIGNED.Only the deeds associated with the conveyancer are returned.
         The response is a json array containing a json object for each deed that is in progress, this will contain the deed reference, expiry date, identity checked status and borrowers array. The borrowers array will contain a list of borrowers related to the deed and will contain the surname, firstname and signature status.
-        If none are found, returns ‘There are currently no in-progress deeds’.
+        If none are found, returns 'There are currently no in-progress deeds'.
       produces:
         - application/json
       tags:
@@ -412,13 +412,6 @@ definitions:
     minItems: 1
     items:
       $ref: '#/definitions/IdChecksPrivateIndividual'
-  In_Progress_Deed_Empty:
-    type: object
-    properties:
-      message:
-        type: string
-        description: A message stating why no in-progress deeds were returned
-        example: There are currently no in-progress deeds
   In_Progress_Deed:
     type: object
     properties:

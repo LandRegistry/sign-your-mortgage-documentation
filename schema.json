@@ -1,784 +1,774 @@
 {
-  "swagger": "2.0",
-  "info": {
-      "title": "Deed API",
-      "description": "Land Registry Deed API",
-      "version": "2.3.1"
-  },
-  "host": "api.landregistry.gov.uk",
-  "schemes": [
-      "https"
-  ],
-  "basePath": "/v1",
-  "produces": [
-      "application/json"
-  ],
-  "paths": {
-      "/deed/": {
-          "post": {
-              "summary": "Deed",
-              "operationId": "addDeed",
-              "description": "The post Deed endpoint creates a new deed based on the JSON provided.\n The reponse will return a URL that can retrieve the created deed. \n > REQUIRED: Land Registry system requests Conveyancer to confirm that the Borrowers identity has been established in accordance with Section 111 of the Network Access Agreement.",
-              "consumes": [
-                  "application/json"
-              ],
-              "produces": [
-                  "application/json"
-              ],
-              "parameters": [{
-                  "in": "body",
-                  "name": "body",
-                  "required": true,
-                  "schema": {
-                      "$ref": "#/definitions/Deed_Application"
-                  }
-              }],
-              "responses": {
-                  "201": {
-                      "description": "A URL to the GET endpoint for the deed returned on successful creation.\n",
-                      "schema": {
-                          "type": "string"
-                      }
-                  },
-                  "400": {
-                      "description": "Bad Request due to invalid schema. Response will include 1 or more schema errors\n",
-                      "schema": {
-                          "$ref": "#/definitions/deed_create_error"
-                      }
-                  }
-              }
-          }
-      },
-      "/deed/{deed_reference}": {
-          "get": {
-              "summary": "Deed",
-              "description": "The Deed endpoint returns details of a specific deed based on the unique deed reference.\nThe response includes the Title Number, Property information, Borrower(s) information and deed information.\n",
-              "produces": [
-                  "application/json",
-                  "application/pdf"
-              ],
-              "parameters": [{
-                  "name": "deed_reference",
-                  "in": "path",
-                  "description": "Unique reference of the deed.",
-                  "required": true,
-                  "type": "string"
-              }, {
-                  "name": "Accept",
-                  "in": "header",
-                  "description": "Pass application/json for the deed as JSON or application/pdf to get a pdf",
-                  "required": true,
-                  "type": "string"
-              }],
-              "tags": [
-                  "Deed"
-              ],
-              "responses": {
-                  "200": {
-                      "description": "A specific deed is returned in Operative Deed Format (application/json header). If the application/pdf header is given instead. This will return a PDF Document of the requested Deed.\n",
-                      "schema": {
-                          "$ref": "#/definitions/Operative_Deed"
-                      }
-                  },
-                  "404": {
-                      "description": "Deed not found",
-                      "schema": {
-                          "$ref": "#/definitions/deed_not_found"
-                      }
-                  }
-              }
-          }
-      },
-      "/deed/retrieve-signed": {
-          "get": {
-              "summary": "Retrieves ALL-SIGNED deed(s).",
-              "description": "The Retrieve Signed endpoint checks the service for all deeds that have been completely signed by the borrowers or borrower. Only the deeds associated with the conveyancer are returned.\nThe response is a json array output containing the deed references e.g. 93e806ab-f1bc-4671-be3e-4cc68b21b77a.\n",
-              "produces": [
-                  "application/json"
-              ],
-              "tags": [
-                  "Retrieve all signed deeds"
-              ],
-              "responses": {
-                  "200": {
-                      "description": "ALL-SIGNED deeds are returned.",
-                      "schema": {
-                          "type": "string"
-                      }
-                  },
-                  "404": {
-                      "description": "No deed found.",
-                      "schema": {
-                          "$ref": "#/definitions/deed_not_found"
-                      }
-                  }
-              }
-          }
-      },
-      "/deed/in-progress": {
-          "get": {
-              "summary": "Retrieves deed(s) that are in-progress.",
-              "description": "Retrieves deed(s) that have a status of DRAFT, PARTIALLY_SIGNED or ALL_SIGNED.Only the deeds associated with the conveyancer are returned.\nThe response is a json array containing a json object for each deed that is in progress, this will contain the deed reference, expiry date, identity checked status and borrowers array. The borrowers array will contain a list of borrowers related to the deed and will contain the surname, firstname and signature status.\nIf none are found, returns ‘There are currently no in-progress deeds’.",
-              "produces": [
-                  "application/json"
-              ],
-              "tags": [
-                  "Retrieve in progress deeds"
-              ],
-              "responses": {
-                  "200": {
-                      "description": "Any deed(s) that are in-progress are returned.",
-                      "schema": {
-                          "$ref": "#/definitions/In_Progress_Deed"
-                      }
-                  }
-              }
-          }
-      },
-      "/deed/{deed_reference}/make-effective": {
-          "post": {
-              "summary": "Make Effective",
-              "description": "The Make Effective endpoint triggers the service to make a deed effective, dating it with the timestamp of when this call is made.\nThe response includes the Title Number, Property information, Borrower(s) information and deed information, as well as the timestamp that is saved onto the deed.\n",
-              "produces": [
-                  "application/json"
-              ],
-              "parameters": [{
-                  "name": "deed_reference",
-                  "in": "path",
-                  "description": "Unique reference of the deed.",
-                  "required": true,
-                  "type": "string"
-              }],
-              "tags": [
-                  "Make Effective"
-              ],
-              "responses": {
-                  "200": {
-                      "description": "A URL to the GET endpoint for the deed returned on successful."
-                  },
-                  "400": {
-                      "description": "One or more errors have been detected. A list of which should accompany this response.\n This is most likely to occur if the deed has already been made effective, or if not all borrowers have signed the deed.",
-                      "schema": {
-                          "$ref": "#/definitions/deed_effective_error"
-                      }
-                  },
-                  "404": {
-                      "description": "Deed not found",
-                      "schema": {
-                          "$ref": "#/definitions/deed_not_found"
-                      }
-                  }
-              }
-          }
-      },
-      "/deed/{deed_reference}/terminate-deed": {
-          "patch": {
-              "summary": "This endpoint sets a deed status to TERMINATED or EXPIRED if called by a polling job, and removes personal data",
-              "description": "This PATCH endpoint will set the status of the incoming deed to TERMINATED or EXPIRED and will remove any personal data associated with the deed.",
-              "produces": [
-                  "application/json"
-              ],
-              "tags": [
-                  "Terminate deed"
-              ],
-              "parameters": [{
-                  "name": "deed_reference",
-                  "in": "path",
-                  "description": "Unique reference of the deed.",
-                  "required": true,
-                  "type": "string"
-              }],
-              "responses": {
-                  "200": {
-                      "description": "A URL to the GET endpoint for the deed returned on successful termination.\n",
-                      "schema": {
-                          "$ref": "#/definitions/path_response"
-                      }
-                  },
-                  "400": {
-                      "description": "Bad request returned when terminating deed\n",
-                      "schema": {
-                          "type": "string",
-                          "example": {"message": "<organisation> failed to terminate deed: <deed_reference>"}
-                      }
-                  },
-                  "401": {
-                      "description": "A message stating that deed termination has failed\n",
-                      "schema": {
-                          "type": "string",
-                          "example": {"message": "Failed to terminate deed for reference: <deed_reference>"}
-                      }
-                  },
-                  "404": {
-                      "description": "A message stating that the deed reference is not valid.",
-                      "schema": {
-                          "type": "string",
-                          "example": {"message": "deed reference <deed_reference> is not valid"}
-                      }
-                  }
-              }
-          }
-      },
-      "/deed/{deed_reference}/extend-deed": {
-          "patch": {
-              "summary": "This endpoint adds ninety days to the current expiry date of a deed if it meets the criteria of being within ninety days of expiry",
-              "description": "This PATCH endpoint will add ninety days to the current expiry date of the deed if it meets the criteria of being within ninety days of expiry",
-              "produces": [
-                  "application/json"
-              ],
-              "tags": [
-                  "Extend deed"
-              ],
-              "parameters": [{
-                  "name": "deed_reference",
-                  "in": "path",
-                  "description": "Unique reference of the deed.",
-                  "required": true,
-                  "type": "string"
-              }],
-              "responses": {
-                  "200": {
-                      "description": "A URL to the GET endpoint for the deed returned on successful extension.\n",
-                      "schema": {
-                          "$ref": "#/definitions/path_response"
-                      }
-                  },
-                  "400": {
-                      "description": "Bad request returned when extending deed\n",
-                      "schema": {
-                          "type": "string",
-                          "example": {"message": "Failed to extend deed <deed_reference>. Deed does not meet criteria for extension."}
-                      }
-                  },
-                  "401": {
-                      "description": "A message stating that deed extension has failed\n",
-                      "schema": {
-                          "type": "string",
-                          "example": {"message": "Failed to extend deed for reference: <deed_reference>"}
-                      }
-                  },
-                  "403": {
-                      "description": "A message stating that the deed cannot be extended\n",
-                      "schema": {
-                          "type": "string",
-                          "example": {"message": "This deed cannot be extended"}
-                      }
-                  },
-                  "404": {
-                      "description": "A message stating that the deed reference is not valid.",
-                      "schema": {
-                          "type": "string",
-                          "example": {"message": "deed reference <deed_reference> is not valid"}
-                      }
-                  }
-              }
-          }
-      },
-      "/deed/{deed_reference}/identity-checks": {
-          "patch": {
-              "summary": "Identity Checks",
-              "description": "The PATCH endpoint compares the borrower information provided with that on the deed. \n If it matches it marks the checks as complete.\n The reponse will return a URL that can retrieve the updated deed. \n > REQUIRED: By calling this endpoint you are confirming that the Borrowers identity has been established in accordance with Section 111 of the Network Access Agreement.",
-              "consumes": [
-                  "application/json"
-              ],
-              "produces": [
-                  "application/json"
-              ],
-              "tags": [
-                  "Identity Checks"
-              ],
-              "parameters": [{
-                  "in": "body",
-                  "name": "body",
-                  "required": true,
-                  "schema": {
-                      "$ref": "#/definitions/Identity_Payload"
-                  }
-              },
-                  {
-                      "name": "deed_reference",
-                      "in": "path",
-                      "description": "Unique reference of the deed.",
-                      "required": true,
-                      "type": "string"
-                  }],
-              "responses": {
-                  "200": {
-                      "description": "A URL to the GET endpoint for the deed returned on success.\n",
-                      "schema": {
-                          "$ref": "#/definitions/path_response"
-                      }
-                  },
-                  "400": {
-                      "description": "Bad Request due to invalid schema or check failure. Response will include 1 or more errors\n",
-                      "schema": {
-                          "$ref": "#/definitions/id_checks_error"
-                      }
-                  },
-                  "404": {
-                      "description": "Deed not found",
-                      "schema": {
-                          "$ref": "#/definitions/deed_not_found"
-                      }
-                  }
-              }
-          }
-      }
-  },
+    "swagger": "2.0",
+    "info": {
+        "title": "Deed API",
+        "description": "Land Registry Deed API",
+        "version": "2.3.1"
+    },
+    "host": "api.landregistry.gov.uk",
+    "schemes": [
+        "https"
+    ],
+    "basePath": "/v1",
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/deed/": {
+            "post": {
+                "summary": "Deed",
+                "operationId": "addDeed",
+                "description": "The post Deed endpoint creates a new deed based on the JSON provided.\n The reponse will return a URL that can retrieve the created deed. \n > REQUIRED: Land Registry system requests Conveyancer to confirm that the Borrowers identity has been established in accordance with Section 111 of the Network Access Agreement.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/definitions/Deed_Application"
+                    }
+                }],
+                "responses": {
+                    "201": {
+                        "description": "A URL to the GET endpoint for the deed returned on successful creation.\n",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request due to invalid schema. Response will include 1 or more schema errors\n",
+                        "schema": {
+                            "$ref": "#/definitions/deed_create_error"
+                        }
+                    }
+                }
+            }
+        },
+        "/deed/{deed_reference}": {
+            "get": {
+                "summary": "Deed",
+                "description": "The Deed endpoint returns details of a specific deed based on the unique deed reference.\nThe response includes the Title Number, Property information, Borrower(s) information and deed information.\n",
+                "produces": [
+                    "application/json",
+                    "application/pdf"
+                ],
+                "parameters": [{
+                    "name": "deed_reference",
+                    "in": "path",
+                    "description": "Unique reference of the deed.",
+                    "required": true,
+                    "type": "string"
+                }, {
+                    "name": "Accept",
+                    "in": "header",
+                    "description": "Pass application/json for the deed as JSON or application/pdf to get a pdf",
+                    "required": true,
+                    "type": "string"
+                }],
+                "tags": [
+                    "Deed"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A specific deed is returned in Operative Deed Format (application/json header). If the application/pdf header is given instead. This will return a PDF Document of the requested Deed.\n",
+                        "schema": {
+                            "$ref": "#/definitions/Operative_Deed"
+                        }
+                    },
+                    "404": {
+                        "description": "Deed not found",
+                        "schema": {
+                            "$ref": "#/definitions/deed_not_found"
+                        }
+                    }
+                }
+            }
+        },
+        "/deed/retrieve-signed": {
+            "get": {
+                "summary": "Retrieves ALL-SIGNED deed(s).",
+                "description": "The Retrieve Signed endpoint checks the service for all deeds that have been completely signed by the borrowers or borrower. Only the deeds associated with the conveyancer are returned.\nThe response is a json array output containing the deed references e.g. 93e806ab-f1bc-4671-be3e-4cc68b21b77a.\n",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Retrieve all signed deeds"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ALL-SIGNED deeds are returned.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "No deed found.",
+                        "schema": {
+                            "$ref": "#/definitions/deed_not_found"
+                        }
+                    }
+                }
+            }
+        },
+        "/deed/in-progress": {
+            "get": {
+                "summary": "Retrieves deed(s) that are in-progress.",
+                "description": "Retrieves deed(s) that have a status of DRAFT, PARTIALLY_SIGNED or ALL_SIGNED.Only the deeds associated with the conveyancer are returned.\nThe response is a json array containing a json object for each deed that is in progress, this will contain the deed reference, expiry date, identity checked status and borrowers array. The borrowers array will contain a list of borrowers related to the deed and will contain the surname, firstname and signature status.\nIf none are found, returns 'There are currently no in-progress deeds'.\n",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Retrieve in progress deeds"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Any deed(s) that are in-progress are returned.",
+                        "schema": {
+                            "$ref": "#/definitions/In_Progress_Deed"
+                        }
+                    }
+                }
+            }
+        },
+        "/deed/{deed_reference}/make-effective": {
+            "post": {
+                "summary": "Make Effective",
+                "description": "The Make Effective endpoint triggers the service to make a deed effective, dating it with the timestamp of when this call is made.\nThe response includes the Title Number, Property information, Borrower(s) information and deed information, as well as the timestamp that is saved onto the deed.\n",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [{
+                    "name": "deed_reference",
+                    "in": "path",
+                    "description": "Unique reference of the deed.",
+                    "required": true,
+                    "type": "string"
+                }],
+                "tags": [
+                    "Make Effective"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A URL to the GET endpoint for the deed returned on successful."
+                    },
+                    "400": {
+                        "description": "One or more errors have been detected. A list of which should accompany this response.\n This is most likely to occur if the deed has already been made effective, or if not all borrowers have signed the deed.",
+                        "schema": {
+                            "$ref": "#/definitions/deed_effective_error"
+                        }
+                    },
+                    "404": {
+                        "description": "Deed not found",
+                        "schema": {
+                            "$ref": "#/definitions/deed_not_found"
+                        }
+                    }
+                }
+            }
+        },
+        "/deed/{deed_reference}/terminate-deed": {
+            "patch": {
+                "summary": "This endpoint sets a deed status to TERMINATED or EXPIRED if called by a polling job, and removes personal data",
+                "description": "This PATCH endpoint will set the status of the incoming deed to TERMINATED or EXPIRED and will remove any personal data associated with the deed.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Terminate deed"
+                ],
+                "parameters": [{
+                    "name": "deed_reference",
+                    "in": "path",
+                    "description": "Unique reference of the deed.",
+                    "required": true,
+                    "type": "string"
+                }],
+                "responses": {
+                    "200": {
+                        "description": "A URL to the GET endpoint for the deed returned on successful termination.\n",
+                        "schema": {
+                            "$ref": "#/definitions/path_response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request returned when terminating deed\n",
+                        "schema": {
+                            "type": "string",
+                            "example": {"message": "<organisation> failed to terminate deed: <deed_reference>"}
+                        }
+                    },
+                    "401": {
+                        "description": "A message stating that deed termination has failed\n",
+                        "schema": {
+                            "type": "string",
+                            "example": {"message": "Failed to terminate deed for reference: <deed_reference>"}
+                        }
+                    },
+                    "404": {
+                        "description": "A message stating that the deed reference is not valid.",
+                        "schema": {
+                            "type": "string",
+                            "example": {"message": "deed reference <deed_reference> is not valid"}
+                        }
+                    }
+                }
+            }
+        },
+        "/deed/{deed_reference}/extend-deed": {
+            "patch": {
+                "summary": "This endpoint adds ninety days to the current expiry date of a deed if it meets the criteria of being within ninety days of expiry",
+                "description": "This PATCH endpoint will add ninety days to the current expiry date of the deed if it meets the criteria of being within ninety days of expiry",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Extend deed"
+                ],
+                "parameters": [{
+                    "name": "deed_reference",
+                    "in": "path",
+                    "description": "Unique reference of the deed.",
+                    "required": true,
+                    "type": "string"
+                }],
+                "responses": {
+                    "200": {
+                        "description": "A URL to the GET endpoint for the deed returned on successful extension.\n",
+                        "schema": {
+                            "$ref": "#/definitions/path_response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request returned when extending deed\n",
+                        "schema": {
+                            "type": "string",
+                            "example": {"message": "Failed to extend deed <deed_reference>. Deed does not meet criteria for extension."}
+                        }
+                    },
+                    "401": {
+                        "description": "A message stating that deed extension has failed\n",
+                        "schema": {
+                            "type": "string",
+                            "example": {"message": "Failed to extend deed for reference: <deed_reference>"}
+                        }
+                    },
+                    "403": {
+                        "description": "A message stating that the deed cannot be extended\n",
+                        "schema": {
+                            "type": "string",
+                            "example": {"message": "This deed cannot be extended"}
+                        }
+                    },
+                    "404": {
+                        "description": "A message stating that the deed reference is not valid.",
+                        "schema": {
+                            "type": "string",
+                            "example": {"message": "deed reference <deed_reference> is not valid"}
+                        }
+                    }
+                }
+            }
+        },
+        "/deed/{deed_reference}/identity-checks": {
+            "patch": {
+                "summary": "Identity Checks",
+                "description": "The PATCH endpoint compares the borrower information provided with that on the deed. \n If it matches it marks the checks as complete.\n The reponse will return a URL that can retrieve the updated deed. \n > REQUIRED: By calling this endpoint you are confirming that the Borrowers identity has been established in accordance with Section 111 of the Network Access Agreement.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Identity Checks"
+                ],
+                "parameters": [{
+                    "in": "body",
+                    "name": "body",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/definitions/Identity_Payload"
+                    }
+                },
+                    {
+                        "name": "deed_reference",
+                        "in": "path",
+                        "description": "Unique reference of the deed.",
+                        "required": true,
+                        "type": "string"
+                    }],
+                "responses": {
+                    "200": {
+                        "description": "A URL to the GET endpoint for the deed returned on success.\n",
+                        "schema": {
+                            "$ref": "#/definitions/path_response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request due to invalid schema or check failure. Response will include 1 or more errors\n",
+                        "schema": {
+                            "$ref": "#/definitions/id_checks_error"
+                        }
+                    },
+                    "404": {
+                        "description": "Deed not found",
+                        "schema": {
+                            "$ref": "#/definitions/deed_not_found"
+                        }
+                    }
+                }
+            }
+        }
+    },
 
-  "definitions": {
-      "Borrower": {
-          "type": "object",
-          "required": [
-              "surname",
-              "forename",
-              "id",
-              "token"
-          ],
-          "properties": {
-              "forename": {
-                  "type": "string",
-                  "pattern": "^(?!\\s*$).+"
-              },
-              "middle_name": {
-                  "type": "string",
-                  "pattern": "^(?!\\s*$).+"
-              },
-              "surname": {
-                  "type": "string",
-                  "pattern": "^(?!\\s*$).+"
-              },
-              "token": {
-                  "type": "string",
-                  "description": "Borrower token for accessing Borrower Frontend.",
-                  "pattern": "^([a-zA-Z0-9]{8})$"
-              },
-              "id": {
-                  "type": "integer",
-                  "description": "Unique borrower ID.",
-                  "pattern": "^[0-9]+$"
-              },
-              "signature": {
-                  "description": "Date and time the signature was applied.",
-                  "type": "string"
-              }
-          }
-      },
-      "InProgressIndividualName": {
-          "type": "object",
-          "properties": {
-              "id": {
-                  "type": "integer"
-              },
-              "forename": {
-                  "type": "string"
-              },
-              "middle_name": {
-                  "type": "string"
-              },
-              "surname": {
-                  "type": "string"
-              },
-              "signature": {
-                  "type": "string",
-                  "enum": [
-                      "Y",
-                      "N"
-                  ]
-              }
-          }
-      },
-      "PrivateIndividualName": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-              "surname",
-              "forename",
-              "dob",
-              "phone_number",
-              "address"
-          ],
-          "properties": {
-              "forename": {
-                  "type": "string",
-                  "pattern": "^(?!\\s*$).+"
-              },
-              "middle_name": {
-                  "type": "string",
-                  "pattern": "^(?!\\s*$).+"
-              },
-              "surname": {
-                  "type": "string",
-                  "pattern": "^(?!\\s*$).+"
-              },
-              "dob": {
-                  "type": "string",
-                  "pattern": "^(0[1-9]|[12][0-9]|3[01])[\\/\\-](0[1-9]|1[012])[/\\-]\\d{4}$"
-              },
-              "gender": {
-                  "type": "string",
-                  "enum": [
-                      "Male",
-                      "Female",
-                      "Not Specified"
-                  ]
-              },
-              "phone_number": {
-                  "type": "string",
-                  "pattern": "^(07[\\d]{9})$"
-              },
-              "address": {
-                  "type": "string",
-                  "pattern": "[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9](?:A-Z-245|[^CIKMOV]){2}"
-              }
-          }
-      },
-      "IdChecksPrivateIndividual": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-              "id",
-              "forename",
-              "surname",
-              "dob",
-              "address"
-          ],
-          "properties": {
-              "id": {
-                  "type": "integer"
-              },
-              "forename": {
-                  "type": "string",
-                  "pattern": "^(?!\\s*$).+"
-              },
-              "middle_name": {
-                  "type": "string",
-                  "pattern": "^(?!\\s*$).+"
-              },
-              "surname": {
-                  "type": "string",
-                  "pattern": "^(?!\\s*$).+"
-              },
-              "dob": {
-                  "type": "string",
-                  "pattern": "^(0[1-9]|[12][0-9]|3[01])[\\/\\-](0[1-9]|1[012])[/\\-]\\d{4}$"
-              },
-              "address": {
-                  "type": "string",
-                  "pattern": "[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9](?:A-Z-245|[^CIKMOV]){2}"
-              }
-          }
-      },
-      "ChargeClause": {
-          "type": "object",
-          "properties": {
-              "description": {
-                  "type": "string"
-              }
-          }
-      },
-      "AdditionalProvisions": {
-          "type": "array",
-          "minItems": 0,
-          "items": {
-              "type": "object",
-              "properties": {
-                  "additional_provision_code": {
-                      "type": "string"
-                  },
-                  "description": {
-                      "type": "string"
-                  }
-              }
-          }
-      },
-      "Lender": {
-          "type": "object",
-          "properties": {
-              "address": {
-                  "type": "string"
-              },
-              "name": {
-                  "type": "string"
-              },
-              "description": {
-                  "type": "string"
-              }
-          }
-      },
-      "OpBorrowers": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-              "$ref": "#/definitions/Borrower"
-          }
-      },
-      "Borrowers": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-              "$ref": "#/definitions/PrivateIndividualName"
-          }
-      },
-      "InProgressBorrowers": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-              "$ref": "#/definitions/InProgressIndividualName"
-          }
-      },
-      "IdBorrowers": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-              "$ref": "#/definitions/IdChecksPrivateIndividual"
-          }
-      },
-      "In_Progress_Deed_Empty": {
-          "type": "object",
-          "properties": {
-              "message": {
-                  "type": "string",
-                  "description": "A message stating why no in-progress deeds were returned",
-                  "example": "There are currently no in-progress deeds"
-              }
-          }
-      },
-      "In_Progress_Deed": {
-          "type": "object",
-          "properties": {
-              "status": {
-                  "type": "string",
-                  "description": "Current state of the deed"
-              },
-              "token": {
-                  "type": "string",
-                  "description": "The ID of the deed"
-              },
-              "expiry_date": {
-                  "type": "string",
-                  "description": "This is a timestamp representing when the deed will expire if no further interactions with the deed have taken place."
-              },
-              "identity_checked": {
-                  "type": "string",
-                  "description": "Flag showing if the identity checks have been performed for this deed",
-                  "enum": [
-                      "Y",
-                      "N"
-                  ]
-              },
-              "borrowers": {
-                  "$ref": "#/definitions/InProgressBorrowers"
-              }
-          }
-      },
-      "Operative_Deed": {
-          "type": "object",
-          "properties": {
-              "deed": {
-                  "type": "object",
-                  "description": "Unique deed, consisting of property, borrower and charge information as well as clauses for the deed.",
-                  "properties": {
-                      "title_number": {
-                          "type": "string",
-                          "description": "Unique Land Registry identifier for the registered estate."
-                      },
-                      "md_ref": {
-                          "type": "string",
-                          "description": "Land Registry assigned number for a Mortgage Deed (MD). If you wish to use an existing MD reference please prefix it with e- to comply with our system (eg e-MD12345)"
-                      },
-                      "borrowers": {
-                          "$ref": "#/definitions/OpBorrowers"
-                      },
-                      "charge_clause": {
-                          "$ref": "#/definitions/ChargeClause"
-                      },
-                      "additional_provisions": {
-                          "$ref": "#/definitions/AdditionalProvisions"
-                      },
-                      "lender": {
-                          "$ref": "#/definitions/Lender"
-                      },
-                      "effective_clause": {
-                          "type": "string",
-                          "description": "Text to display the make effective clause"
-                      },
-                      "property_address": {
-                          "type": "string",
-                          "description": "The address of property that the deed relates. This should be supplied in a comma separated format e.g. 30 wakefield rd, plymouth, PL6 3WA"
-                      },
-                      "reference": {
-                          "type": "string",
-                          "maxLength": 50,
-                          "pattern": "^(?!\\s*$).+",
-                          "description": "A conveyancer reference.  Can be displayed on the deed if the mortgage document template permits."
-                      },
-                      "date_of_mortgage_offer": {
-                          "type": "string",
-                          "maxLength": 50,
-                          "pattern": "^(?!\\s*$).+",
-                          "description": "Date that the mortgage offer was made.  Can be displayed on the deed if the mortgage document template permits."
-                      },
-                      "deed_status": {
-                          "type": "string",
-                          "description": "Current state of the deed"
-                      },
-                      "token": {
-                          "type": "string",
-                          "description": "The ID of the deed"
-                      },
-                      "effective_date": {
-                          "type": "string",
-                          "description": "An effective date is shown if the deed is made effective"
-                      },
-                      "identity_checked": {
-                          "type": "string",
-                          "description": "Flag showing if the identity checks have been performed for this deed",
-                          "enum": [
-                              "Y",
-                              "N"
-                          ]
-                      },
-                      "proxy_organisation_name": {
-                          "type": "string",
-                          "description": "The name of the proxy organisation that will be given permission to perform actions, such as creating or getting a deed."
-                      }
-                  }
-              }
-          }
-      },
-      "Identity_Payload": {
-          "type": "object",
-          "required": [
-              "borrowers"
-          ],
-          "properties": {
-              "borrowers": {
-                  "$ref": "#/definitions/IdBorrowers"
-              }
-          }
-      },
-      "Deed_Application": {
-          "type": "object",
-          "required": [
-              "title_number",
-              "borrowers",
-              "md_ref",
-              "identity_checked",
-              "is_second_charge",
-              "property_address"
-          ],
-          "properties": {
-              "title_number": {
-                  "type": "string",
-                  "pattern": "^([A-Z]{0,3}[1-9][0-9]{0,5}|[0-9]{1,6}[ZT])$"
-              },
-              "borrowers": {
-                  "$ref": "#/definitions/Borrowers"
-              },
-              "md_ref": {
-                  "pattern": "^e-MD([0-9]{5}|([0-9]{3,4}[A-Z]{1}))$",
-                  "type": "string"
-              },
-              "identity_checked": {
-                  "pattern": "^[Y|N]$",
-                  "type": "string"
-              },
-              "is_second_charge": {
-                  "pattern": "^[Y|N]$",
-                  "type": "string",
-                  "description": "This is to confirm whether or not this will be for a second charge."
-              },
-              "property_address": {
-                  "pattern": "^(?!\\s*$).+",
-                  "type": "string",
-                  "description": "The address of property that the deed relates. This should be supplied in a comma separated format e.g. 30 wakefield rd, plymouth, PL6 3WA"
-              },
-              "reference": {
-                  "type": "string",
-                  "maxLength": 50,
-                  "pattern": "^(?!\\s*$).+",
-                  "description": "A conveyancer reference.  Can be displayed on the deed if the mortgage document template permits."
-              },
-              "date_of_mortgage_offer": {
-                  "type": "string",
-                  "maxLength": 50,
-                  "pattern": "^(?!\\s*$).+",
-                  "description": "Date that the mortgage offer was made.  Can be displayed on the deed if the mortgage document template permits."
-              },
-              "deed_effector": {
-                  "type": "string",
-                  "description": "Name of the legal deed effector. To be used where the legal deed effector name is different to that of the conveyancer."
-              },
-              "proxy_organisation_name": {
-                  "type": "string",
-                  "pattern": "^(?!\\s*$).+",
-                  "description": "The name of the proxy organisation that will be given permission to perform actions, such as creating or getting a deed."
-              }
-          }
-      },
-      "deed_not_found": {
-          "title": "The format of errors returned when attempting to get a deed",
-          "type": "object",
-          "properties": {
-              "message":{
-                  "type": "string",
-                  "example": "deed not found error"
-              }
-          }
-      },
-      "deed_create_error": {
-          "title": "The format of errors returned when attempting to create a deed",
-          "type": "object",
-          "properties": {
-              "errors":{
-                  "type": "array",
-                  "items": {
-                      "type": "string"
-                  },
-                  "example": [
-                      "Schema errors",
-                      "Title Validation Error",
-                      "Invalid request for the provided title"
-                  ]
-              }
-          }
-      },
-      "deed_effective_error": {
-          "title": "The format of errors returned when attempting to make a deed effective",
-          "type": "object",
-          "properties": {
-              "errors":{
-                  "type": "array",
-                  "items": {
-                      "type": "string"
-                  },
-                  "example": ["error","make effective error"]
-              }
-          }
-      },
-      "id_checks_error": {
-          "title": "The format of errors returned when attempting to complete identity checks",
-          "type": "object",
-          "properties": {
-              "errors":{
-                  "type": "array",
-                  "items": {
-                      "type": "string"
-                  },
-                  "example": ["error","an id check error"]
-              }
-          }
-      },
-      "path_response": {
-          "type": "object",
-          "required": ["path"],
-          "properties": {
-              "path": {
-                  "type": "string",
-                  "example": "/deed/e643f282-0ef0-453e-a395-60ec890e1072"
-              }
-          }
-      }
-  }
+    "definitions": {
+        "Borrower": {
+            "type": "object",
+            "required": [
+                "surname",
+                "forename",
+                "id",
+                "token"
+            ],
+            "properties": {
+                "forename": {
+                    "type": "string",
+                    "pattern": "^(?!\\s*$).+"
+                },
+                "middle_name": {
+                    "type": "string",
+                    "pattern": "^(?!\\s*$).+"
+                },
+                "surname": {
+                    "type": "string",
+                    "pattern": "^(?!\\s*$).+"
+                },
+                "token": {
+                    "type": "string",
+                    "description": "Borrower token for accessing Borrower Frontend.",
+                    "pattern": "^([a-zA-Z0-9]{8})$"
+                },
+                "id": {
+                    "type": "integer",
+                    "description": "Unique borrower ID.",
+                    "pattern": "^[0-9]+$"
+                },
+                "signature": {
+                    "description": "Date and time the signature was applied.",
+                    "type": "string"
+                }
+            }
+        },
+        "InProgressIndividualName": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "forename": {
+                    "type": "string"
+                },
+                "middle_name": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                },
+                "signature": {
+                    "type": "string",
+                    "enum": [
+                        "Y",
+                        "N"
+                    ]
+                }
+            }
+        },
+        "PrivateIndividualName": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "surname",
+                "forename",
+                "dob",
+                "phone_number",
+                "address"
+            ],
+            "properties": {
+                "forename": {
+                    "type": "string",
+                    "pattern": "^(?!\\s*$).+"
+                },
+                "middle_name": {
+                    "type": "string",
+                    "pattern": "^(?!\\s*$).+"
+                },
+                "surname": {
+                    "type": "string",
+                    "pattern": "^(?!\\s*$).+"
+                },
+                "dob": {
+                    "type": "string",
+                    "pattern": "^(0[1-9]|[12][0-9]|3[01])[\\/\\-](0[1-9]|1[012])[/\\-]\\d{4}$"
+                },
+                "gender": {
+                    "type": "string",
+                    "enum": [
+                        "Male",
+                        "Female",
+                        "Not Specified"
+                    ]
+                },
+                "phone_number": {
+                    "type": "string",
+                    "pattern": "^(07[\\d]{9})$"
+                },
+                "address": {
+                    "type": "string",
+                    "pattern": "[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9](?:A-Z-245|[^CIKMOV]){2}"
+                }
+            }
+        },
+        "IdChecksPrivateIndividual": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "id",
+                "forename",
+                "surname",
+                "dob",
+                "address"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "forename": {
+                    "type": "string",
+                    "pattern": "^(?!\\s*$).+"
+                },
+                "middle_name": {
+                    "type": "string",
+                    "pattern": "^(?!\\s*$).+"
+                },
+                "surname": {
+                    "type": "string",
+                    "pattern": "^(?!\\s*$).+"
+                },
+                "dob": {
+                    "type": "string",
+                    "pattern": "^(0[1-9]|[12][0-9]|3[01])[\\/\\-](0[1-9]|1[012])[/\\-]\\d{4}$"
+                },
+                "address": {
+                    "type": "string",
+                    "pattern": "[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9](?:A-Z-245|[^CIKMOV]){2}"
+                }
+            }
+        },
+        "ChargeClause": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "AdditionalProvisions": {
+            "type": "array",
+            "minItems": 0,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "additional_provision_code": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "Lender": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "OpBorrowers": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "$ref": "#/definitions/Borrower"
+            }
+        },
+        "Borrowers": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "$ref": "#/definitions/PrivateIndividualName"
+            }
+        },
+        "InProgressBorrowers": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "$ref": "#/definitions/InProgressIndividualName"
+            }
+        },
+        "IdBorrowers": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "$ref": "#/definitions/IdChecksPrivateIndividual"
+            }
+        },
+        "In_Progress_Deed": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "description": "Current state of the deed"
+                },
+                "token": {
+                    "type": "string",
+                    "description": "The ID of the deed"
+                },
+                "expiry_date": {
+                    "type": "string",
+                    "description": "This is a timestamp representing when the deed will expire if no further interactions with the deed have taken place."
+                },
+                "identity_checked": {
+                    "type": "string",
+                    "description": "Flag showing if the identity checks have been performed for this deed",
+                    "enum": [
+                        "Y",
+                        "N"
+                    ]
+                },
+                "borrowers": {
+                    "$ref": "#/definitions/InProgressBorrowers"
+                }
+            }
+        },
+        "Operative_Deed": {
+            "type": "object",
+            "properties": {
+                "deed": {
+                    "type": "object",
+                    "description": "Unique deed, consisting of property, borrower and charge information as well as clauses for the deed.",
+                    "properties": {
+                        "title_number": {
+                            "type": "string",
+                            "description": "Unique Land Registry identifier for the registered estate."
+                        },
+                        "md_ref": {
+                            "type": "string",
+                            "description": "Land Registry assigned number for a Mortgage Deed (MD). If you wish to use an existing MD reference please prefix it with e- to comply with our system (eg e-MD12345)"
+                        },
+                        "borrowers": {
+                            "$ref": "#/definitions/OpBorrowers"
+                        },
+                        "charge_clause": {
+                            "$ref": "#/definitions/ChargeClause"
+                        },
+                        "additional_provisions": {
+                            "$ref": "#/definitions/AdditionalProvisions"
+                        },
+                        "lender": {
+                            "$ref": "#/definitions/Lender"
+                        },
+                        "effective_clause": {
+                            "type": "string",
+                            "description": "Text to display the make effective clause"
+                        },
+                        "property_address": {
+                            "type": "string",
+                            "description": "The address of property that the deed relates. This should be supplied in a comma separated format e.g. 30 wakefield rd, plymouth, PL6 3WA"
+                        },
+                        "reference": {
+                            "type": "string",
+                            "maxLength": 50,
+                            "pattern": "^(?!\\s*$).+",
+                            "description": "A conveyancer reference.  Can be displayed on the deed if the mortgage document template permits."
+                        },
+                        "date_of_mortgage_offer": {
+                            "type": "string",
+                            "maxLength": 50,
+                            "pattern": "^(?!\\s*$).+",
+                            "description": "Date that the mortgage offer was made.  Can be displayed on the deed if the mortgage document template permits."
+                        },
+                        "deed_status": {
+                            "type": "string",
+                            "description": "Current state of the deed"
+                        },
+                        "token": {
+                            "type": "string",
+                            "description": "The ID of the deed"
+                        },
+                        "effective_date": {
+                            "type": "string",
+                            "description": "An effective date is shown if the deed is made effective"
+                        },
+                        "identity_checked": {
+                            "type": "string",
+                            "description": "Flag showing if the identity checks have been performed for this deed",
+                            "enum": [
+                                "Y",
+                                "N"
+                            ]
+                        },
+                        "proxy_organisation_name": {
+                            "type": "string",
+                            "description": "The name of the proxy organisation that will be given permission to perform actions, such as creating or getting a deed."
+                        }
+                    }
+                }
+            }
+        },
+        "Identity_Payload": {
+            "type": "object",
+            "required": [
+                "borrowers"
+            ],
+            "properties": {
+                "borrowers": {
+                    "$ref": "#/definitions/IdBorrowers"
+                }
+            }
+        },
+        "Deed_Application": {
+            "type": "object",
+            "required": [
+                "title_number",
+                "borrowers",
+                "md_ref",
+                "identity_checked",
+                "is_second_charge",
+                "property_address"
+            ],
+            "properties": {
+                "title_number": {
+                    "type": "string",
+                    "pattern": "^([A-Z]{0,3}[1-9][0-9]{0,5}|[0-9]{1,6}[ZT])$"
+                },
+                "borrowers": {
+                    "$ref": "#/definitions/Borrowers"
+                },
+                "md_ref": {
+                    "pattern": "^e-MD([0-9]{5}|([0-9]{3,4}[A-Z]{1}))$",
+                    "type": "string"
+                },
+                "identity_checked": {
+                    "pattern": "^[Y|N]$",
+                    "type": "string"
+                },
+                "is_second_charge": {
+                    "pattern": "^[Y|N]$",
+                    "type": "string",
+                    "description": "This is to confirm whether or not this will be for a second charge."
+                },
+                "property_address": {
+                    "pattern": "^(?!\\s*$).+",
+                    "type": "string",
+                    "description": "The address of property that the deed relates. This should be supplied in a comma separated format e.g. 30 wakefield rd, plymouth, PL6 3WA"
+                },
+                "reference": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "pattern": "^(?!\\s*$).+",
+                    "description": "A conveyancer reference.  Can be displayed on the deed if the mortgage document template permits."
+                },
+                "date_of_mortgage_offer": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "pattern": "^(?!\\s*$).+",
+                    "description": "Date that the mortgage offer was made.  Can be displayed on the deed if the mortgage document template permits."
+                },
+                "deed_effector": {
+                    "type": "string",
+                    "description": "Name of the legal deed effector. To be used where the legal deed effector name is different to that of the conveyancer."
+                },
+                "proxy_organisation_name": {
+                    "type": "string",
+                    "pattern": "^(?!\\s*$).+",
+                    "description": "The name of the proxy organisation that will be given permission to perform actions, such as creating or getting a deed."
+                }
+            }
+        },
+        "deed_not_found": {
+            "title": "The format of errors returned when attempting to get a deed",
+            "type": "object",
+            "properties": {
+                "message":{
+                    "type": "string",
+                    "example": "deed not found error"
+                }
+            }
+        },
+        "deed_create_error": {
+            "title": "The format of errors returned when attempting to create a deed",
+            "type": "object",
+            "properties": {
+                "errors":{
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Schema errors",
+                        "Title Validation Error",
+                        "Invalid request for the provided title"
+                    ]
+                }
+            }
+        },
+        "deed_effective_error": {
+            "title": "The format of errors returned when attempting to make a deed effective",
+            "type": "object",
+            "properties": {
+                "errors":{
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": ["error","make effective error"]
+                }
+            }
+        },
+        "id_checks_error": {
+            "title": "The format of errors returned when attempting to complete identity checks",
+            "type": "object",
+            "properties": {
+                "errors":{
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": ["error","an id check error"]
+                }
+            }
+        },
+        "path_response": {
+            "type": "object",
+            "required": ["path"],
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "example": "/deed/e643f282-0ef0-453e-a395-60ec890e1072"
+                }
+            }
+        }
+    }
 }
