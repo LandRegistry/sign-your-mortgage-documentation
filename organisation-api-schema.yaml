@@ -8,7 +8,7 @@ info:
   description: Land Registry Organisation API
   version: 2.3.1
 paths:
-  /organisations:
+  /org/organisations:
     get:
       summary: Organisation
       operationId: getOrganisations
