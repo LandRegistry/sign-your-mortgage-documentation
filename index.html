@@ -158,6 +158,58 @@
           </p>
         </div>
         <div class="schemas">
+          <a name="auth-headers"><h2>User Authentication</h2></a>
+          <p>
+            To be able to use this service, you will need to include an authorization header in your
+            requests to our service.  
+          </p>
+          <p>
+            The correct format for the Authorization header is to add your username and password seperated by a colon.
+            As an example you could have 'johnsmith' as the username and 'password' as the password. Which would look like:
+<pre>
+  <code>
+  johnsmith:password
+  </code>
+</pre>
+            Then Base64 encode this string, would which look like:
+<pre>
+  <code>
+  am9obnNtaXRoOnBhc3N3b3Jk
+  </code>
+</pre>
+            Finally, you will need to add this Base64 encoded username and password to your Authorization header for the request.
+<pre>
+  <code>
+  Key: Authorization
+  Value: Basic am9obnNtaXRoOnBhc3N3b3Jk
+  </code>
+</pre>
+          </p>
+
+          <p>
+              In the future, Authorization headers will be mandatory. This will be communicated to conveyancers nearer the time. If the request is successfull, the expected payload for the endpoint will be returned. If however there is an issue with your username and password, the following responses will be returned:
+          </p>
+401 UNAUTHORIZED
+<pre>
+  <code>
+  { "Message": "Invalid credentials." }
+  </code>
+</pre>
+
+          <p>
+            If no header is sent with the request:
+          </p>
+400 BAD REQUEST
+<pre>
+  <code>
+  { "Message": "Authorization header not present." }
+  </code>
+</pre>
+
+
+
+        </div>
+        <div class="schemas">
           <a name="testHub"><h2>Test Hub</h2></a>
           <p>
             HM Land Registry operates a Test Hub which runs a test version of
