@@ -222,8 +222,7 @@ paths:
             application/json:
               schema:
                 type: string
-                example:
-                  message: Failed to extend deed <deed_reference>. Deed does not meet criteria for extension.
+                example: Failed to extend deed <deed_reference>. Deed does not meet criteria for extension.
         '401':
           description: |
             A message stating that deed extension has failed
