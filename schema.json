@@ -211,6 +211,16 @@
                 }
               }
             }
+          },
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Effective_Payload"
+                }
+              }
+            },
+            "required": false
           }
         }
       },
@@ -760,6 +770,18 @@
           "properties": {
             "borrowers": {
               "$ref": "#/components/schemas/IdBorrowers"
+            }
+          }
+        },
+        "Effective_Payload": {
+          "type": "object",
+          "required": [
+            "effective_datetime"
+          ],
+          "properties": {
+            "effective_datetime": {
+              "type": "string",
+              "pattern": "^([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})$"
             }
           }
         },
