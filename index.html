@@ -165,7 +165,18 @@
             make the deed effective with the current date and time. If a 
             payload is sent then it will use that date and time to make the deed 
             effective. It does however require that the date and time sent through is
-            after the last signed timestamp and before the current time. 
+            after the last signed timestamp and before the current time.
+          </p>
+          <p>
+            This sent date and time needs to be in the ISO8601 format. An <a href="#makeEffectivePayload">example</a> 
+            of the expected format is '2019-10-10T10:10:00.123456+00:00'. Please refer to the payload example below.
+            This must include in line with the above example:
+            <ul>
+            <li>Date and time standardised to UTC with timezone offset</li>
+            <li>Include 'T' after date</li>
+            <li>Time is required with microseconds e.g. (.000000)</li>
+            <p></p>
+            </ul>
           </p>
         </div>
         <div class="schemas">
@@ -519,8 +530,15 @@
             </code>
           </pre>
 
-          <h3>Make deed effective</h3>
-          <h4>POST /deed/&lt;Deed Id&gt;/make-effective</h4>
+          <a name='makeEffectivePayload'><h4>POST /deed/&lt;Deed Id&gt;/make-effective</h4></a>
+          <h5>Payload (Optional)</h5>
+          <pre>
+            <code>
+{
+  "effective_datetime": "2019-10-10T10:10:00.123456+00:00"
+}
+            </code>
+          </pre>
           <h5>Responses</h5>
           200 OK
           <pre>
@@ -544,13 +562,6 @@
             <code>
 {
   "message": "The 'effective_datetime' must be after the last signature date and time and before the current date or time."
-}
-            </code>
-          </pre>
-          <pre>
-            <code>
-{
-  "message": "The 'effective_datetime' value needs to be in the correct format - '%Y-%m-%d %H:%M:%S'"
 }
             </code>
           </pre>
