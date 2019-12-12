@@ -368,6 +368,14 @@
             </pre>
         <h3>In-Progress Deed</h3>
         <h4>GET /deed/in-progress</h4>
+        <p>
+          This route will accept no additional parameters and will return a list of deeds as defined by the maximum limit set by the service.   
+        </p>
+        <h4>GET /deed/in-progress/{start_date}/{end_date}</h4>
+        <p>
+          This route will accept a start and an end date parameter and will return a list of deeds as defined by the maximum limit set by the service,
+          these however will be within the limit defined by the start and end dates submitted.   
+        </p>
         <h5>Responses</h5>
         200 OK
             <pre>
@@ -487,6 +495,14 @@
           </pre>
           <h3>Retrieve signed deeds</h3>
           <h4>GET /retrieve-signed</h4>
+          <p>
+            This route will accept no additional parameters and will return a list of deeds that have a status of 'All-Signed' as defined by the maximum limit set by the service.   
+          </p>
+          <h4>GET /retrieve-signed/{start_date}/{end_date}</h4>
+          <p>
+            This route will accept a start and an end date parameter and will return a list of deeds that have a status of 'All-Signed' as defined by the maximum limit set by the service,
+            these however will be within the limit defined by the start and end dates submitted.   
+          </p>
           <h5>Responses</h5>
           200 OK
           <pre>
