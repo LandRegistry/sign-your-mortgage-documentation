@@ -359,7 +359,7 @@ components:
           pattern: ^(?!\s*$).+
         dob:
           type: string
-          pattern: '^(0[1-9]|[12][0-9]|3[01])[\/\-](0[1-9]|1[012])[/\-]\d{4}$'
+          pattern: '^(0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[012])[\/]\d{4}$'
         gender:
           type: string
           enum:
@@ -395,7 +395,7 @@ components:
           pattern: ^(?!\s*$).+
         dob:
           type: string
-          pattern: '^(0[1-9]|[12][0-9]|3[01])[\/\-](0[1-9]|1[012])[/\-]\d{4}$'
+          pattern: '^(0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[012])[\/]\d{4}$'
         address:
           type: string
           pattern: '[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9](?:A-Z-245|[^CIKMOV]){2}'
