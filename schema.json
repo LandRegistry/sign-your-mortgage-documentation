@@ -443,15 +443,15 @@
           "properties": {
             "forename": {
               "type": "string",
-              "pattern": "^(?!\\s*$).+"
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$"
             },
             "middle_name": {
               "type": "string",
-              "pattern": "^(?!\\s*$).+"
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$"
             },
             "surname": {
               "type": "string",
-              "pattern": "^(?!\\s*$).+"
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$"
             },
             "token": {
               "type": "string",
@@ -506,15 +506,15 @@
           "properties": {
             "forename": {
               "type": "string",
-              "pattern": "^(?!\\s*$).+"
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$"
             },
             "middle_name": {
               "type": "string",
-              "pattern": "^(?!\\s*$).+"
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$"
             },
             "surname": {
               "type": "string",
-              "pattern": "^(?!\\s*$).+"
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$"
             },
             "dob": {
               "type": "string",
@@ -534,7 +534,7 @@
             },
             "address": {
               "type": "string",
-              "pattern": "[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9](?:A-Z-245|[^CIKMOV]){2}"
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$"
             }
           }
         },
@@ -554,15 +554,15 @@
             },
             "forename": {
               "type": "string",
-              "pattern": "^(?!\\s*$).+"
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$"
             },
             "middle_name": {
               "type": "string",
-              "pattern": "^(?!\\s*$).+"
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$"
             },
             "surname": {
               "type": "string",
-              "pattern": "^(?!\\s*$).+"
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$"
             },
             "dob": {
               "type": "string",
@@ -570,7 +570,7 @@
             },
             "address": {
               "type": "string",
-              "pattern": "[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9](?:A-Z-245|[^CIKMOV]){2}"
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$"
             }
           }
         },
@@ -715,13 +715,13 @@
                 "reference": {
                   "type": "string",
                   "maxLength": 50,
-                  "pattern": "^(?!\\s*$).+",
+                  "pattern": "^(?!\\s*$)((?![<>&#]).)+$",
                   "description": "A conveyancer reference.  Can be displayed on the deed if the mortgage document template permits."
                 },
                 "date_of_mortgage_offer": {
                   "type": "string",
                   "maxLength": 50,
-                  "pattern": "^(?!\\s*$).+",
+                  "pattern": "^(?!\\s*$)((?![<>&#]).)+$",
                   "description": "Date that the mortgage offer was made.  Can be displayed on the deed if the mortgage document template permits."
                 },
                 "deed_status": {
@@ -794,29 +794,30 @@
               "description": "This is to confirm whether or not this will be for a second charge."
             },
             "property_address": {
-              "pattern": "^(?!\\s*$).+",
+              "pattern": "^((?![<>&#]).)*[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9](?:[AB]|[D-H]|[JLN]|[P-U]|[W-Z]){2}$",
               "type": "string",
               "description": "The address of property that the deed relates. This should be supplied in a comma separated format e.g. 30 wakefield rd, plymouth, PL6 3WA"
             },
             "reference": {
               "type": "string",
               "maxLength": 50,
-              "pattern": "^(?!\\s*$).+",
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$",
               "description": "A conveyancer reference.  Can be displayed on the deed if the mortgage document template permits."
             },
             "date_of_mortgage_offer": {
               "type": "string",
               "maxLength": 50,
-              "pattern": "^(?!\\s*$).+",
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$",
               "description": "Date that the mortgage offer was made.  Can be displayed on the deed if the mortgage document template permits."
             },
             "deed_effector": {
               "type": "string",
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$",
               "description": "Name of the legal deed effector. To be used where the legal deed effector name is different to that of the conveyancer."
             },
             "proxy_organisation_name": {
               "type": "string",
-              "pattern": "^(?!\\s*$).+",
+              "pattern": "^(?!\\s*$)((?![<>&#]).)+$",
               "description": "The name of the proxy organisation that will be given permission to perform actions, such as creating or getting a deed."
             }
           }
