@@ -78,6 +78,12 @@ paths:
             application/pdf:
               schema:
                 $ref: '#/components/schemas/deed_not_found'
+        '410':
+          description: Deed found but permanently removed. this is the expected result when obtaining a PDF of a deed with the status of TERMINATED or EXPIRED
+          content:
+            application/pdf:
+              schema:
+                $ref: '#/components/schemas/deed_found_but_removed'
   /deed/retrieve-signed:
     get:
       summary: Retrieves ALL-SIGNED deed(s).
@@ -585,6 +591,13 @@ components:
         message:
           type: string
           example: deed not found error
+    deed_found_but_removed:
+      title: The format of errors returned when attempting to get a deed in PDF form
+      type: object
+      properties:
+        message:
+          type: string
+          example: 'The deed you requested has been found but has been permanently removed and has a status of: TERMINATED'
     deed_create_error:
       title: The format of errors returned when attempting to create a deed
       type: object
