@@ -1,7 +1,6 @@
 openapi: 3.0.0
 servers:
   - url: 'https://bgtest.landregistry.gov.uk/api/deeds'
-  - url: 'https://businessgateway.landregistry.gov.uk/api/deeds'
   - url: /v1
 info:
   title: Deed API
