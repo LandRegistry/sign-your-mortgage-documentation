@@ -1,7 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
 import { List } from "immutable"
-import { Collapse } from "react-collapse"
 
 export default class Errors extends React.Component {
 
@@ -9,11 +8,14 @@ export default class Errors extends React.Component {
     editorActions: PropTypes.object,
     errSelectors: PropTypes.object.isRequired,
     layoutSelectors: PropTypes.object.isRequired,
-    layoutActions: PropTypes.object.isRequired
+    layoutActions: PropTypes.object.isRequired,
+    getComponent: PropTypes.func.isRequired,
   }
 
   render() {
-    let { editorActions, errSelectors, layoutSelectors, layoutActions } = this.props
+    let { editorActions, errSelectors, layoutSelectors, layoutActions, getComponent } = this.props
+
+    const Collapse = getComponent("Collapse")
 
     if(editorActions && editorActions.jumpToLine) {
       var jumpToLine = editorActions.jumpToLine
@@ -70,10 +72,10 @@ const ThrownErrorItem = ( { error, jumpToLine } ) => {
           <h4>{ (error.get("source") && error.get("level")) ?
             toTitleCase(error.get("source")) + " " + error.get("level") : "" }
           { error.get("path") ? <small> at {error.get("path")}</small>: null }</h4>
-          <span style={{ whiteSpace: "pre-line", "maxWidth": "100%" }}>
+          <span className="message thrown">
             { error.get("message") }
           </span>
-          <div style={{ "text-decoration": "underline", "cursor": "pointer" }}>
+          <div className="error-line">
             { errorLine && jumpToLine ? <a onClick={jumpToLine.bind(null, errorLine)}>Jump to line { errorLine }</a> : null }
           </div>
         </div>
@@ -100,8 +102,8 @@ const SpecErrorItem = ( { error, jumpToLine } ) => {
       { !error ? null :
         <div>
           <h4>{ toTitleCase(error.get("source")) + " " + error.get("level") }&nbsp;{ locationMessage }</h4>
-          <span style={{ whiteSpace: "pre-line"}}>{ error.get("message") }</span>
-          <div style={{ "text-decoration": "underline", "cursor": "pointer" }}>
+          <span className="message">{ error.get("message") }</span>
+          <div className="error-line">
             { jumpToLine ? (
               <a onClick={jumpToLine.bind(null, error.get("line"))}>Jump to line { error.get("line") }</a>
             ) : null }

@@ -28,7 +28,7 @@ Here is an example of each `type`
 ```js
 // A contrived, but quite full example....
 
-export function SomePlugin( toolbox ) {
+export function SomePlugin(toolbox) {
 
   const UPDATE_SOMETHING = "some_namespace_update_something" // strings just need to be uniuqe... see below
 
@@ -66,7 +66,7 @@ export function SomePlugin( toolbox ) {
             getState => getState(), // This is a requirement... because we `bind` selectors, we don't want to bind to any particular state (which is an immutable value) so we bind to a function, which returns the current state
             state => state.get("something") // return the whatever "something" points to
           ),
-          foo: getState => "bar" // In the end selectors are just fuctions that we pass getState to
+          foo: getState => "bar" // In the end selectors are just functions that we pass getState to
         }
       }
 

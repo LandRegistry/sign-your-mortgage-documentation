@@ -1,8 +1,8 @@
 import React from "react"
 import PropTypes from "prop-types"
-import { fromJS } from "immutable"
 import ImPropTypes from "react-immutable-proptypes"
 import { sanitizeUrl } from "core/utils"
+import { safeBuildUrl } from "core/utils/url"
 
 
 export class InfoBasePath extends React.Component {
@@ -25,22 +25,28 @@ export class InfoBasePath extends React.Component {
 
 class Contact extends React.Component {
   static propTypes = {
-    data: PropTypes.object
+    data: PropTypes.object,
+    getComponent: PropTypes.func.isRequired,
+    specSelectors: PropTypes.object.isRequired,
+    selectedServer: PropTypes.string,
+    url: PropTypes.string.isRequired,
   }
 
   render(){
-    let { data } = this.props
+    let { data, getComponent, selectedServer, url: specUrl} = this.props
     let name = data.get("name") || "the developer"
-    let url = data.get("url")
+    let url = safeBuildUrl(data.get("url"), specUrl, {selectedServer})
     let email = data.get("email")
 
+    const Link = getComponent("Link")
+
     return (
-      <div>
-        { url && <div><a href={ sanitizeUrl(url) } target="_blank">{ name } - Website</a></div> }
+      <div className="info__contact">
+        { url && <div><Link href={ sanitizeUrl(url) } target="_blank">{ name } - Website</Link></div> }
         { email &&
-          <a href={sanitizeUrl(`mailto:${email}`)}>
+          <Link href={sanitizeUrl(`mailto:${email}`)}>
             { url ? `Send email to ${name}` : `Contact ${name}`}
-          </a>
+          </Link>
         }
       </div>
     )
@@ -49,18 +55,24 @@ class Contact extends React.Component {
 
 class License extends React.Component {
   static propTypes = {
-    license: PropTypes.object
+    license: PropTypes.object,
+    getComponent: PropTypes.func.isRequired,
+    specSelectors: PropTypes.object.isRequired,
+    selectedServer: PropTypes.string,
+    url: PropTypes.string.isRequired,
   }
 
   render(){
-    let { license } = this.props
+    let { license, getComponent, selectedServer, url: specUrl } = this.props
+
+    const Link = getComponent("Link")
     let name = license.get("name") || "License"
-    let url = license.get("url")
+    let url = safeBuildUrl(license.get("url"), specUrl, {selectedServer})
 
     return (
-      <div>
+      <div className="info__license">
         {
-          url ? <a target="_blank" href={ sanitizeUrl(url) }>{ name }</a>
+          url ? <Link target="_blank" href={ sanitizeUrl(url) }>{ name }</Link>
         : <span>{ name }</span>
         }
       </div>
@@ -70,12 +82,17 @@ class License extends React.Component {
 
 export class InfoUrl extends React.PureComponent {
   static propTypes = {
-    url: PropTypes.string.isRequired
+    url: PropTypes.string.isRequired,
+    getComponent: PropTypes.func.isRequired
   }
 
+
   render() {
-    const { url } = this.props
-    return <a target="_blank" href={ sanitizeUrl(url) }><span className="url"> { url } </span></a>
+    const { url, getComponent } = this.props
+
+    const Link = getComponent("Link")
+
+    return <Link target="_blank" href={ sanitizeUrl(url) }><span className="url"> { url }</span></Link>
   }
 }
 
@@ -87,19 +104,24 @@ export default class Info extends React.Component {
     basePath: PropTypes.string,
     externalDocs: ImPropTypes.map,
     getComponent: PropTypes.func.isRequired,
+    oas3selectors: PropTypes.func,
+    selectedServer: PropTypes.string,
   }
 
   render() {
-    let { info, url, host, basePath, getComponent, externalDocs } = this.props
+    let { info, url, host, basePath, getComponent, externalDocs, selectedServer, url: specUrl } = this.props
     let version = info.get("version")
     let description = info.get("description")
     let title = info.get("title")
-    let termsOfService = info.get("termsOfService")
+    let termsOfServiceUrl = safeBuildUrl(info.get("termsOfService"), specUrl, {selectedServer})
     let contact = info.get("contact")
     let license = info.get("license")
-    const { url:externalDocsUrl, description:externalDocsDescription } = (externalDocs || fromJS({})).toJS()
+    let rawExternalDocsUrl = externalDocs && externalDocs.get("url")
+    let externalDocsUrl = safeBuildUrl(rawExternalDocsUrl, specUrl, {selectedServer})
+    let externalDocsDescription = externalDocs && externalDocs.get("description")
 
-    const Markdown = getComponent("Markdown")
+    const Markdown = getComponent("Markdown", true)
+    const Link = getComponent("Link")
     const VersionStamp = getComponent("VersionStamp")
     const InfoUrl = getComponent("InfoUrl")
     const InfoBasePath = getComponent("InfoBasePath")
@@ -111,7 +133,7 @@ export default class Info extends React.Component {
             { version && <VersionStamp version={version}></VersionStamp> }
           </h2>
           { host || basePath ? <InfoBasePath host={ host } basePath={ basePath } /> : null }
-          { url && <InfoUrl url={url} /> }
+          { url && <InfoUrl getComponent={getComponent} url={url} /> }
         </hgroup>
 
         <div className="description">
@@ -119,15 +141,15 @@ export default class Info extends React.Component {
         </div>
 
         {
-          termsOfService && <div>
-            <a target="_blank" href={ sanitizeUrl(termsOfService) }>Terms of service</a>
+          termsOfServiceUrl && <div className="info__tos">
+            <Link target="_blank" href={ sanitizeUrl(termsOfServiceUrl) }>Terms of service</Link>
           </div>
         }
 
-        { contact && contact.size ? <Contact data={ contact } /> : null }
-        { license && license.size ? <License license={ license } /> : null }
+        {contact && contact.size ? <Contact getComponent={getComponent} data={ contact } selectedServer={selectedServer} url={url} /> : null }
+        {license && license.size ? <License getComponent={getComponent} license={ license } selectedServer={selectedServer} url={url}/> : null }
         { externalDocsUrl ?
-            <a target="_blank" href={sanitizeUrl(externalDocsUrl)}>{externalDocsDescription || externalDocsUrl}</a>
+            <Link className="info__extdocs" target="_blank" href={sanitizeUrl(externalDocsUrl)}>{externalDocsDescription || externalDocsUrl}</Link>
         : null }
 
       </div>

@@ -1,20 +1,15 @@
 import deepExtend from "deep-extend"
 
-import System from "core/system"
-import win from "core/window"
-import ApisPreset from "core/presets/apis"
-
-import * as AllPlugins from "core/plugins/all"
-import { parseSearch } from "core/utils"
-
-if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
-  win.Perf = require("react-addons-perf")
-}
+import System from "./system"
+import ApisPreset from "./presets/apis"
+import AllPlugins from "./plugins/all"
+import { parseSearch } from "./utils"
+import win from "./window"
 
 // eslint-disable-next-line no-undef
-const { GIT_DIRTY, GIT_COMMIT, PACKAGE_VERSION, HOSTNAME, BUILD_TIME } = buildInfo
+const { GIT_DIRTY, GIT_COMMIT, PACKAGE_VERSION, BUILD_TIME } = buildInfo
 
-module.exports = function SwaggerUI(opts) {
+export default function SwaggerUI(opts) {
 
   win.versions = win.versions || {}
   win.versions.swaggerUi = {
@@ -22,7 +17,6 @@ module.exports = function SwaggerUI(opts) {
     gitRevision: GIT_COMMIT,
     gitDirty: GIT_DIRTY,
     buildTimestamp: BUILD_TIME,
-    machine: HOSTNAME
   }
 
   const defaults = {
@@ -36,12 +30,15 @@ module.exports = function SwaggerUI(opts) {
     docExpansion: "list",
     maxDisplayedTags: null,
     filter: null,
-    validatorUrl: "https://online.swagger.io/validator",
+    validatorUrl: "https://validator.swagger.io/validator",
+    oauth2RedirectUrl: `${window.location.protocol}//${window.location.host}${window.location.pathname.substring(0, window.location.pathname.lastIndexOf("/"))}/oauth2-redirect.html`,
+    persistAuthorization: false,
     configs: {},
     custom: {},
     displayOperationId: false,
     displayRequestDuration: false,
     deepLinking: false,
+    tryItOutEnabled: false,
     requestInterceptor: (a => a),
     responseInterceptor: (a => a),
     showMutatedRequest: true,
@@ -50,6 +47,26 @@ module.exports = function SwaggerUI(opts) {
     defaultModelsExpandDepth: 1,
     showExtensions: false,
     showCommonExtensions: false,
+    withCredentials: undefined,
+    requestSnippetsEnabled: false,
+    requestSnippets: {
+      generators: {
+        "curl_bash": {
+          title: "cURL (bash)",
+          syntax: "bash"
+        },
+        "curl_powershell": {
+          title: "cURL (PowerShell)",
+          syntax: "powershell"
+        },
+        "curl_cmd": {
+          title: "cURL (CMD)",
+          syntax: "bash"
+        },
+      },
+      defaultExpanded: true,
+      languages: null, // e.g. only show curl bash = ["curl_bash"]
+    },
     supportedSubmitMethods: [
       "get",
       "put",
@@ -60,6 +77,7 @@ module.exports = function SwaggerUI(opts) {
       "patch",
       "trace"
     ],
+    queryConfigEnabled: false,
 
     // Initial set of plugins ( TODO rename this, or refactor - we don't need presets _and_ plugins. Its just there for performance.
     // Instead, we can compile the first plugin ( it can be a collection of plugins ), then batch the rest.
@@ -71,15 +89,27 @@ module.exports = function SwaggerUI(opts) {
     plugins: [
     ],
 
+    pluginsOptions: {
+      // Behavior during plugin registration. Can be :
+      // - legacy (default) : the current behavior for backward compatibility – last plugin takes precedence over the others
+      // - chain : chain wrapComponents when targeting the same core component
+      pluginLoadType: "legacy"
+    },
+
     // Initial state
     initialState: { },
 
     // Inline Plugin
     fn: { },
     components: { },
+
+    syntaxHighlight: {
+      activated: true,
+      theme: "agate"
+    }
   }
 
-  let queryConfig = parseSearch()
+  let queryConfig = opts.queryConfigEnabled ? parseSearch() : {}
 
   const domNode = opts.domNode
   delete opts.domNode
@@ -91,6 +121,7 @@ module.exports = function SwaggerUI(opts) {
       configs: constructorConfig.configs
     },
     plugins: constructorConfig.presets,
+    pluginsOptions: constructorConfig.pluginsOptions,
     state: deepExtend({
       layout: {
         layout: constructorConfig.layout,
@@ -99,7 +130,8 @@ module.exports = function SwaggerUI(opts) {
       spec: {
         spec: "",
         url: constructorConfig.url
-      }
+      },
+      requestSnippets: constructorConfig.requestSnippets
     }, constructorConfig.initialState)
   }
 
@@ -109,7 +141,7 @@ module.exports = function SwaggerUI(opts) {
     // known usage: Swagger-Editor validate plugin tests
     for (var key in constructorConfig.initialState) {
       if(
-        constructorConfig.initialState.hasOwnProperty(key)
+        Object.prototype.hasOwnProperty.call(constructorConfig.initialState, key)
         && constructorConfig.initialState[key] === undefined
       ) {
         delete storeConfigs.state[key]
@@ -147,7 +179,7 @@ module.exports = function SwaggerUI(opts) {
         system.specActions.updateUrl("")
         system.specActions.updateLoadingStatus("success")
         system.specActions.updateSpec(JSON.stringify(mergedConfig.spec))
-      } else if (system.specActions.download && mergedConfig.url) {
+      } else if (system.specActions.download && mergedConfig.url && !mergedConfig.urls) {
         system.specActions.updateUrl(mergedConfig.url)
         system.specActions.download(mergedConfig.url)
       }
@@ -170,24 +202,24 @@ module.exports = function SwaggerUI(opts) {
 
   const configUrl = queryConfig.config || constructorConfig.configUrl
 
-  if (!configUrl || !system.specActions || !system.specActions.getConfigByUrl || system.specActions.getConfigByUrl && !system.specActions.getConfigByUrl({
-    url: configUrl,
-    loadRemoteConfig: true,
-    requestInterceptor: constructorConfig.requestInterceptor,
-    responseInterceptor: constructorConfig.responseInterceptor,
-  }, downloadSpec)) {
-    return downloadSpec()
+  if (configUrl && system.specActions && system.specActions.getConfigByUrl) {
+    system.specActions.getConfigByUrl({
+      url: configUrl,
+      loadRemoteConfig: true,
+      requestInterceptor: constructorConfig.requestInterceptor,
+      responseInterceptor: constructorConfig.responseInterceptor,
+    }, downloadSpec)
   } else {
-    system.specActions.getConfigByUrl(configUrl, downloadSpec)
+    return downloadSpec()
   }
 
   return system
 }
 
 // Add presets
-module.exports.presets = {
+SwaggerUI.presets = {
   apis: ApisPreset,
 }
 
 // All Plugins
-module.exports.plugins = AllPlugins
+SwaggerUI.plugins = AllPlugins
