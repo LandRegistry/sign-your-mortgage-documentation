@@ -9,6 +9,7 @@ export const PRE_AUTHORIZE_OAUTH2 = "pre_authorize_oauth2"
 export const AUTHORIZE_OAUTH2 = "authorize_oauth2"
 export const VALIDATE = "validate"
 export const CONFIGURE_AUTH = "configure_auth"
+export const RESTORE_AUTHORIZATION = "restore_authorization"
 
 const scopeSeparator = " "
 
@@ -26,11 +27,21 @@ export function authorize(payload) {
   }
 }
 
+export const authorizeWithPersistOption = (payload) => ( { authActions } ) => {
+  authActions.authorize(payload)
+  authActions.persistAuthorizationIfNeeded()
+}
+
 export function logout(payload) {
   return {
     type: LOGOUT,
     payload: payload
   }
+}
+
+export const logoutWithPersistOption = (payload) => ( { authActions } ) => {
+  authActions.logout(payload)
+  authActions.persistAuthorizationIfNeeded()
 }
 
 export const preAuthorizeImplicit = (payload) => ( { authActions, errActions } ) => {
@@ -60,8 +71,9 @@ export const preAuthorizeImplicit = (payload) => ( { authActions, errActions } )
     return
   }
 
-  authActions.authorizeOauth2({ auth, token })
+  authActions.authorizeOauth2WithPersistOption({ auth, token })
 }
+
 
 export function authorizeOauth2(payload) {
   return {
@@ -70,33 +82,46 @@ export function authorizeOauth2(payload) {
   }
 }
 
+
+export const authorizeOauth2WithPersistOption = (payload) => ( { authActions } ) => {
+  authActions.authorizeOauth2(payload)
+  authActions.persistAuthorizationIfNeeded()
+}
+
 export const authorizePassword = ( auth ) => ( { authActions } ) => {
   let { schema, name, username, password, passwordType, clientId, clientSecret } = auth
   let form = {
     grant_type: "password",
-    scope: auth.scopes.join(scopeSeparator)
+    scope: auth.scopes.join(scopeSeparator),
+    username,
+    password
   }
   let query = {}
   let headers = {}
 
-  if ( passwordType === "basic") {
-    headers.Authorization = "Basic " + btoa(username + ":" + password)
-  } else {
-    Object.assign(form, {username}, {password})
+  switch (passwordType) {
+    case "request-body":
+      setClientIdAndSecret(form, clientId, clientSecret)
+      break
 
-    if ( passwordType === "query") {
-      if ( clientId ) {
-        query.client_id = clientId
-      }
-      if ( clientSecret ) {
-        query.client_secret = clientSecret
-      }
-    } else {
+    case "basic":
       headers.Authorization = "Basic " + btoa(clientId + ":" + clientSecret)
-    }
+      break
+    default:
+      console.warn(`Warning: invalid passwordType ${passwordType} was passed, not including client id and secret`)
   }
 
   return authActions.authorizeRequest({ body: buildFormData(form), url: schema.get("tokenUrl"), name, headers, query, auth})
+}
+
+function setClientIdAndSecret(target, clientId, clientSecret) {
+  if ( clientId ) {
+    Object.assign(target, {client_id: clientId})
+  }
+
+  if ( clientSecret ) {
+    Object.assign(target, {client_secret: clientSecret})
+  }
 }
 
 export const authorizeApplication = ( auth ) => ( { authActions } ) => {
@@ -113,20 +138,21 @@ export const authorizeApplication = ( auth ) => ( { authActions } ) => {
 }
 
 export const authorizeAccessCodeWithFormParams = ( { auth, redirectUrl } ) => ( { authActions } ) => {
-  let { schema, name, clientId, clientSecret } = auth
+  let { schema, name, clientId, clientSecret, codeVerifier } = auth
   let form = {
     grant_type: "authorization_code",
     code: auth.code,
     client_id: clientId,
     client_secret: clientSecret,
-    redirect_uri: redirectUrl
+    redirect_uri: redirectUrl,
+    code_verifier: codeVerifier
   }
 
   return authActions.authorizeRequest({body: buildFormData(form), name, url: schema.get("tokenUrl"), auth})
 }
 
 export const authorizeAccessCodeWithBasicAuthentication = ( { auth, redirectUrl } ) => ( { authActions } ) => {
-  let { schema, name, clientId, clientSecret } = auth
+  let { schema, name, clientId, clientSecret, codeVerifier } = auth
   let headers = {
     Authorization: "Basic " + btoa(clientId + ":" + clientSecret)
   }
@@ -134,7 +160,8 @@ export const authorizeAccessCodeWithBasicAuthentication = ( { auth, redirectUrl 
     grant_type: "authorization_code",
     code: auth.code,
     client_id: clientId,
-    redirect_uri: redirectUrl
+    redirect_uri: redirectUrl,
+    code_verifier: codeVerifier
   }
 
   return authActions.authorizeRequest({body: buildFormData(form), name, url: schema.get("tokenUrl"), auth, headers})
@@ -148,7 +175,8 @@ export const authorizeRequest = ( data ) => ( { fn, getConfigs, authActions, err
   let parsedUrl
 
   if (specSelectors.isOAS3()) {
-    parsedUrl = parseUrl(url, oas3Selectors.selectedServer(), true)
+    let finalServerUrl = oas3Selectors.serverEffectiveValue(oas3Selectors.selectedServer())
+    parsedUrl = parseUrl(url, finalServerUrl, true)
   } else {
     parsedUrl = parseUrl(url, specSelectors.url(), true)
   }
@@ -161,7 +189,8 @@ export const authorizeRequest = ( data ) => ( { fn, getConfigs, authActions, err
 
   let _headers = Object.assign({
     "Accept":"application/json, text/plain, */*",
-    "Content-Type": "application/x-www-form-urlencoded"
+    "Content-Type": "application/x-www-form-urlencoded",
+    "X-Requested-With": "XMLHttpRequest"
   }, headers)
 
   fn.fetch({
@@ -198,15 +227,32 @@ export const authorizeRequest = ( data ) => ( { fn, getConfigs, authActions, err
       return
     }
 
-    authActions.authorizeOauth2({ auth, token})
+    authActions.authorizeOauth2WithPersistOption({ auth, token})
   })
   .catch(e => {
     let err = new Error(e)
+    let message = err.message
+    // swagger-js wraps the response (if available) into the e.response property;
+    // investigate to check whether there are more details on why the authorization
+    // request failed (according to RFC 6479).
+    // See also https://github.com/swagger-api/swagger-ui/issues/4048
+    if (e.response && e.response.data) {
+      const errData = e.response.data
+      try {
+        const jsonResponse = typeof errData === "string" ? JSON.parse(errData) : errData
+        if (jsonResponse.error)
+          message += `, error: ${jsonResponse.error}`
+        if (jsonResponse.error_description)
+          message += `, description: ${jsonResponse.error_description}`
+      } catch (jsonError) {
+        // Ignore
+      }
+    }
     errActions.newAuthErr( {
       authId: name,
       level: "error",
       source: "auth",
-      message: err.message
+      message: message
     } )
   })
 }
@@ -216,4 +262,26 @@ export function configureAuth(payload) {
     type: CONFIGURE_AUTH,
     payload: payload
   }
+}
+
+export function restoreAuthorization(payload) {
+  return {
+    type: RESTORE_AUTHORIZATION,
+    payload: payload
+  }
+}
+
+export const persistAuthorizationIfNeeded = () => ( { authSelectors, getConfigs } ) => {
+  const configs = getConfigs()
+  if (configs.persistAuthorization)
+  {
+    const authorized = authSelectors.authorized()
+    localStorage.setItem("authorized", JSON.stringify(authorized.toJS()))
+  }
+}
+
+export const authPopup = (url, swaggerUIRedirectOauth2) => ( ) => {
+  win.swaggerUIRedirectOauth2 = swaggerUIRedirectOauth2
+
+  win.open(url)
 }

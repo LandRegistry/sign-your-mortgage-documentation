@@ -1,5 +1,13 @@
 ---
-url: "http://petstore.swagger.io/v2/swagger.json"
+urls: "[
+          {
+            url: "https://raw.githubusercontent.com/LandRegistry/sign-your-mortgage-documentation/gh-pages/schema.yaml",
+            name: "deed-api" 
+          },
+          {
+            url: "https://raw.githubusercontent.com/LandRegistry/sign-your-mortgage-documentation/gh-pages/organisation-api-schema.yaml",
+            name: "organisation-api"
+          }
+        ]"
 dom_id: "#swagger-ui"
-validatorUrl: "https://online.swagger.io/validator"
-oauth2RedirectUrl: "http://localhost:3200/oauth2-redirect.html"
+validatorUrl: "https://validator.swagger.io/validator"

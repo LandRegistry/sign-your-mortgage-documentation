@@ -3,29 +3,33 @@ import layout from "core/plugins/layout"
 import spec from "core/plugins/spec"
 import view from "core/plugins/view"
 import samples from "core/plugins/samples"
+import requestSnippets from "core/plugins/request-snippets"
 import logs from "core/plugins/logs"
-import ast from "core/plugins/ast"
 import swaggerJs from "core/plugins/swagger-js"
 import auth from "core/plugins/auth"
 import util from "core/plugins/util"
-import SplitPaneModePlugin from "core/plugins/split-pane-mode"
 import downloadUrlPlugin from "core/plugins/download-url"
 import configsPlugin from "core/plugins/configs"
 import deepLinkingPlugin from "core/plugins/deep-linking"
 import filter from "core/plugins/filter"
 import onComplete from "core/plugins/on-complete"
+import safeRender from "core/plugins/safe-render"
 
 import OperationContainer from "core/containers/OperationContainer"
 
 import App from "core/components/app"
 import AuthorizationPopup from "core/components/auth/authorization-popup"
 import AuthorizeBtn from "core/components/auth/authorize-btn"
+import AuthorizeBtnContainer from "core/containers/authorize-btn"
 import AuthorizeOperationBtn from "core/components/auth/authorize-operation-btn"
 import Auths from "core/components/auth/auths"
 import AuthItem from "core/components/auth/auth-item"
 import AuthError from "core/components/auth/error"
 import ApiKeyAuth from "core/components/auth/api-key-auth"
 import BasicAuth from "core/components/auth/basic-auth"
+import Example from "core/components/example"
+import ExamplesSelect from "core/components/examples-select"
+import ExamplesSelectValueRetainer from "core/components/examples-select-value-retainer"
 import Oauth2 from "core/components/auth/oauth2"
 import Clear from "core/components/clear"
 import LiveResponse from "core/components/live-response"
@@ -33,28 +37,39 @@ import OnlineValidatorBadge from "core/components/online-validator-badge"
 import Operations from "core/components/operations"
 import OperationTag from "core/components/operation-tag"
 import Operation from "core/components/operation"
+import OperationSummary from "core/components/operation-summary"
+import OperationSummaryMethod from "core/components/operation-summary-method"
+import OperationSummaryPath from "core/components/operation-summary-path"
 import OperationExt from "core/components/operation-extensions"
 import OperationExtRow from "core/components/operation-extension-row"
 import HighlightCode from "core/components/highlight-code"
 import Responses from "core/components/responses"
 import Response from "core/components/response"
+import ResponseExtension from "core/components/response-extension"
 import ResponseBody from "core/components/response-body"
-import Parameters from "core/components/parameters"
+import { Parameters } from "core/components/parameters"
 import ParameterExt from "core/components/parameter-extension"
+import ParameterIncludeEmpty from "core/components/parameter-include-empty"
 import ParameterRow from "core/components/parameter-row"
 import Execute from "core/components/execute"
 import Headers from "core/components/headers"
 import Errors from "core/components/errors"
 import ContentType from "core/components/content-type"
 import Overview from "core/components/overview"
+import InitializedInput from "core/components/initialized-input"
 import Info, {
   InfoUrl,
   InfoBasePath
 } from "core/components/info"
+import InfoContainer from "core/containers/info"
+import JumpToPath from "core/components/jump-to-path"
+import CopyToClipboardBtn from "core/components/copy-to-clipboard-btn"
 import Footer from "core/components/footer"
+import FilterContainer from "core/containers/filter"
 import ParamBody from "core/components/param-body"
 import Curl from "core/components/curl"
 import Schemes from "core/components/schemes"
+import SchemesContainer from "core/containers/schemes"
 import ModelCollapse from "core/components/model-collapse"
 import ModelExample from "core/components/model-example"
 import ModelWrapper from "core/components/model-wrapper"
@@ -85,6 +100,7 @@ export default function() {
       App,
       authorizationPopup: AuthorizationPopup,
       authorizeBtn: AuthorizeBtn,
+      AuthorizeBtnContainer,
       authorizeOperationBtn: AuthorizeOperationBtn,
       auths: Auths,
       AuthItem: AuthItem,
@@ -94,13 +110,21 @@ export default function() {
       basicAuth: BasicAuth,
       clear: Clear,
       liveResponse: LiveResponse,
+      InitializedInput,
       info: Info,
+      InfoContainer,
+      JumpToPath,
+      CopyToClipboardBtn,
       onlineValidatorBadge: OnlineValidatorBadge,
       operations: Operations,
       operation: Operation,
+      OperationSummary,
+      OperationSummaryMethod,
+      OperationSummaryPath,
       highlightCode: HighlightCode,
       responses: Responses,
       response: Response,
+      ResponseExtension: ResponseExtension,
       responseBody: ResponseBody,
       parameters: Parameters,
       parameterRow: ParameterRow,
@@ -110,9 +134,11 @@ export default function() {
       contentType: ContentType,
       overview: Overview,
       footer: Footer,
+      FilterContainer,
       ParamBody: ParamBody,
       curl: Curl,
       schemes: Schemes,
+      SchemesContainer,
       modelExample: ModelExample,
       ModelWrapper,
       ModelCollapse,
@@ -131,12 +157,16 @@ export default function() {
       OperationExt,
       OperationExtRow,
       ParameterExt,
+      ParameterIncludeEmpty,
       OperationTag,
       OperationContainer,
       DeepLink,
       InfoUrl,
       InfoBasePath,
-      SvgAssets
+      SvgAssets,
+      Example,
+      ExamplesSelect,
+      ExamplesSelectValueRetainer,
     }
   }
 
@@ -162,11 +192,11 @@ export default function() {
     swaggerJs,
     jsonSchemaComponents,
     auth,
-    ast,
-    SplitPaneModePlugin,
     downloadUrlPlugin,
     deepLinkingPlugin,
     filter,
-    onComplete
+    onComplete,
+    requestSnippets,
+    safeRender(),
   ]
 }

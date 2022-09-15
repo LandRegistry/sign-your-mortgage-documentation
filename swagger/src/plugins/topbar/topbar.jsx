@@ -2,13 +2,13 @@ import React, { cloneElement } from "react"
 import PropTypes from "prop-types"
 
 //import "./topbar.less"
-import Logo from "./logo_small.png"
 import {parseSearch, serializeSearch} from "../../core/utils"
 
 export default class Topbar extends React.Component {
 
   static propTypes = {
-    layoutActions: PropTypes.object.isRequired
+    layoutActions: PropTypes.object.isRequired,
+    authActions: PropTypes.object.isRequired
   }
 
   constructor(props, context) {
@@ -16,7 +16,7 @@ export default class Topbar extends React.Component {
     this.state = { url: props.specSelectors.url(), selectedIndex: 0 }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState({ url: nextProps.specSelectors.url() })
   }
 
@@ -25,7 +25,19 @@ export default class Topbar extends React.Component {
     this.setState({url: value})
   }
 
+  flushAuthData() {
+    const { persistAuthorization } = this.props.getConfigs()
+    if (persistAuthorization)
+    {
+      return
+    }
+    this.props.authActions.restoreAuthorization({
+      authorized: {}
+    })
+  }
+
   loadSpec = (url) => {
+    this.flushAuthData()
     this.props.specActions.updateUrl(url)
     this.props.specActions.download(url)
   }
@@ -69,11 +81,12 @@ export default class Topbar extends React.Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const configs = this.props.getConfigs()
     const urls = configs.urls || []
 
     if(urls && urls.length) {
+      var targetIndex = this.state.selectedIndex
       let primaryName = configs["urls.primaryName"]
       if(primaryName)
       {
@@ -81,17 +94,12 @@ export default class Topbar extends React.Component {
           if(spec.name === primaryName)
             {
               this.setState({selectedIndex: i})
+              targetIndex = i
             }
         })
       }
-    }
-  }
 
-  componentDidMount() {
-    const urls = this.props.getConfigs().urls || []
-
-    if(urls && urls.length) {
-      this.loadSpec(urls[this.state.selectedIndex].url)
+      this.loadSpec(urls[targetIndex].url)
     }
   }
 
@@ -104,13 +112,14 @@ export default class Topbar extends React.Component {
     let { getComponent, specSelectors, getConfigs } = this.props
     const Button = getComponent("Button")
     const Link = getComponent("Link")
+    const Logo = getComponent("Logo")
 
     let isLoading = specSelectors.loadingStatus() === "loading"
     let isFailed = specSelectors.loadingStatus() === "failed"
 
-    let inputStyle = {}
-    if(isFailed) inputStyle.color = "red"
-    if(isLoading) inputStyle.color = "#aaa"
+    const classNames = ["download-url-input"]
+    if (isFailed) classNames.push("failed")
+    if (isLoading) classNames.push("loading")
 
     const { urls } = getConfigs()
     let control = []
@@ -123,7 +132,7 @@ export default class Topbar extends React.Component {
       })
 
       control.push(
-        <label className="select-label" htmlFor="select"><span>Select a spec</span>
+        <label className="select-label" htmlFor="select"><span>Select a definition</span>
           <select id="select" disabled={isLoading} onChange={ this.onUrlSelect } value={urls[this.state.selectedIndex].url}>
             {rows}
           </select>
@@ -132,7 +141,7 @@ export default class Topbar extends React.Component {
     }
     else {
       formOnSubmit = this.downloadUrl
-      control.push(<input className="download-url-input" type="text" onChange={ this.onUrlChange } value={this.state.url} disabled={isLoading} style={inputStyle} />)
+      control.push(<input className={classNames.join(" ")} type="text" onChange={ this.onUrlChange } value={this.state.url} disabled={isLoading} />)
       control.push(<Button className="download-url-button" onClick={ this.downloadUrl }>Explore</Button>)
     }
 
@@ -141,8 +150,7 @@ export default class Topbar extends React.Component {
         <div className="wrapper">
           <div className="topbar-wrapper">
             <Link>
-              <img height="30" width="30" src={ Logo } alt="Swagger UI"/>
-              <span>swagger</span>
+              <Logo/>
             </Link>
             <form className="download-url-wrapper" onSubmit={formOnSubmit}>
               {control.map((el, i) => cloneElement(el, { key: i }))}
